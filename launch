@@ -214,7 +214,7 @@ app.post('/api/execute', (req, res) => {
     
     switch(command) {
         case 'create-repo':
-            cmdToExecute = `echo $(pwd) && bash bin/initialize ${githubKey} ${repoName}`;
+            cmdToExecute = `bash ../bin/initialize ${githubKey} ${repoName}`;
             break;
         case 'push-repo':
             cmdToExecute = `cd manager-web-app/${repoName} && bash .../bin/push ${githubKey} ${repoName} && cd -`;
