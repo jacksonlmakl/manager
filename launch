@@ -131,13 +131,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
             <label for="github-key">GitHub Personal Access Token:</label>
             <input type="password" id="github-key" placeholder="Enter your GitHub Personal Access Token">
         </div>
-        <div class="checkbox-container">
-          <input type="checkbox" id="remember-key" checked>
-          <label for="remember-key">Remember token</label>
-        </div>
+
         <div class="form-group">
             <label for="repo-name">Repository Name:</label>
             <input type="text" id="repo-name" placeholder="Enter repository name">
+        </div>
+<br></br>
+        <div class="checkbox-container">
+          <input type="checkbox" id="remember-key" checked>
+          <label for="remember-key">Remember token</label>
         </div>
         <div class="checkbox-container">
           <input type="checkbox" id="remember-repo" checked>
