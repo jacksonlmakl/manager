@@ -130,7 +130,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
         
         <div class="actions">
-            <button onclick="executeCommand('install')">Install</button>
             <button onclick="executeCommand('create-repo')">Create New Repo</button>
             <button onclick="executeCommand('push-repo')">Push Repo</button>
             <button onclick="executeCommand('pull-repo')">Pull Repo</button>
@@ -155,7 +154,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
             const loadingElement = document.getElementById('loading');
             
             // Validate inputs
-            if (command !== 'install' && (!githubKey || !repoName)) {
+            if (!githubKey || !repoName) {
                 outputElement.textContent = "Error: GitHub Personal Access Token and Repository Name are required!";
                 return;
             }
@@ -214,23 +213,20 @@ app.post('/api/execute', (req, res) => {
     let cmdToExecute = '';
     
     switch(command) {
-        case 'install':
-            cmdToExecute = 'bash manager/bin/install';
-            break;
         case 'create-repo':
-            cmdToExecute = `echo $(pwd) && bash ../bin/initialize ${githubKey} ${repoName}`;
+            cmdToExecute = `cd manager && bash bin/initialize ${githubKey} ${repoName}`;
             break;
         case 'push-repo':
-            cmdToExecute = `cd ${repoName} && bash ../bin/push ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ${repoName} && bash bin/push ${githubKey} ${repoName} && cd -`;
             break;
         case 'pull-repo':
-            cmdToExecute = `cd ${repoName} && bash ../bin/pull ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ${repoName} && bash bin/pull ${githubKey} ${repoName} && cd -`;
             break;
         case 'stop-containers':
-            cmdToExecute = `cd ${repoName} && bash ../bin/stop && cd -`;
+            cmdToExecute = `cd ${repoName} && bash bin/pull ${githubKey} ${repoName} && cd -`;
             break;
         case 'start-containers':
-            cmdToExecute = `cd ${repoName} && bash ../bin/start && cd -`;
+            cmdToExecute = `cd ${repoName} && bash bin/pull ${githubKey} ${repoName} && cd -`;
             break;
         default:
             return res.status(400).json({ error: 'Invalid command' });
