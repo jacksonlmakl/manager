@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Ensure script exits on failure
+set -e
+
+# Check for required arguments
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <GITHUB_ACCESS_TOKEN> <NEW_REPO_NAME>"
+    exit 1
+fi
+
+# Assign input arguments
+GITHUB_TOKEN="$1"
+NEW_REPO_NAME="$2"
+GITHUB_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | jq -r .login)
+
+# Validate GitHub user retrieval
+if [ -z "$GITHUB_USER" ] || [ "$GITHUB_USER" == "null" ]; then
+    echo "Error: Unable to authenticate with GitHub. Check your access token."
+    exit 1
+fi
+
+# Create a new GitHub repository using the API
+echo "Creating new repository: $NEW_REPO_NAME"
+curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    -d "{\"name\": \"$NEW_REPO_NAME\", \"private\": false}" \
+    https://api.github.com/user/repos
+
+# Clone the existing repository
+echo "Cloning 'deploy' repository..."
+git clone https://github.com/jacksonlmakl/deploy.git "$NEW_REPO_NAME"
+
+# Change to the new directory
+cd "$NEW_REPO_NAME"
+
+# Change the remote origin to the new repository
+echo "Setting new remote origin..."
+git remote remove origin
+git remote add origin "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$NEW_REPO_NAME.git"
+
+# Push to the new repository
+echo "Pushing files to new repository..."
+git push --set-upstream origin main
+
+# Run Docker Compose
+echo "Starting Docker services..."
+docker compose up -d
+
+echo "✅ Deployment complete!"
