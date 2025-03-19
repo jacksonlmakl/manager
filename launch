@@ -9,7 +9,7 @@ echo "  Launching Manager CLI Web Interface"
 echo "==============================================="
 
 # Define path to the web application
-APP_DIR="$(pwd)/manager-web-app"
+APP_DIR="$(pwd)"
 
 # Create the application directory if it doesn't exist
 if [ ! -d "$APP_DIR" ]; then
