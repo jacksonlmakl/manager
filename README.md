@@ -2,6 +2,7 @@
 
 ### Install
 git clone https://github.com/jacksonlmakl/manager.git && cd manager 
+
 cd bash bin/install
 
 ### Create New Repo
