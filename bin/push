@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Ensure script exits on failure
+set -e
+
+# Check for required arguments
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <GITHUB_ACCESS_TOKEN> <REPO_NAME>"
+    exit 1
+fi
+
+# Assign input arguments
+GITHUB_TOKEN="$1"
+REPO_NAME="$2"
+GITHUB_USER=$(curl -s -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user | jq -r .login)
+
+# Validate GitHub user retrieval
+if [ -z "$GITHUB_USER" ] || [ "$GITHUB_USER" == "null" ]; then
+    echo "Error: Unable to authenticate with GitHub. Check your access token."
+    exit 1
+fi
+
+# Change to the repository directory
+if [ ! -d "$REPO_NAME" ]; then
+    echo "Error: Directory $REPO_NAME does not exist."
+    exit 1
+fi
+
+cd "$REPO_NAME"
+
+# Ensure we are on the main branch
+echo "Checking out main branch..."
+git checkout main
+
+# Force push the local branch to overwrite the remote branch
+echo "Force pushing local branch to overwrite remote main branch..."
+git push --force "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git" main
+
+echo "✅ Remote main branch has been force reset to match local main branch."
