@@ -9,7 +9,7 @@ echo "  Launching Manager CLI Web Interface"
 echo "==============================================="
 
 # Define path to the web application
-APP_DIR="$(pwd)"
+APP_DIR="$(pwd)/manager-web-app"
 
 # Create the application directory if it doesn't exist
 if [ ! -d "$APP_DIR" ]; then
@@ -215,22 +215,22 @@ app.post('/api/execute', (req, res) => {
     
     switch(command) {
         case 'install':
-            cmdToExecute = 'git clone https://github.com/jacksonlmakl/manager.git && bash bin/install';
+            cmdToExecute = 'git clone https://github.com/jacksonlmakl/manager.git && bash manager/bin/install';
             break;
         case 'create-repo':
-            cmdToExecute = `bash ./bin/initialize ${githubKey} ${repoName}`;
+            cmdToExecute = `bash bin/initialize ${githubKey} ${repoName}`;
             break;
         case 'push-repo':
-            cmdToExecute = `cd ${repoName} && bash bin/push ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ${repoName} && bash ../bin/push ${githubKey} ${repoName} && cd -`;
             break;
         case 'pull-repo':
-            cmdToExecute = `cd ${repoName} && bash bin/pull ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ${repoName} && bash ../bin/pull ${githubKey} ${repoName} && cd -`;
             break;
         case 'stop-containers':
-            cmdToExecute = `cd ${repoName} && bash bin/stop && cd -`;
+            cmdToExecute = `cd ${repoName} && bash ../bin/stop && cd -`;
             break;
         case 'start-containers':
-            cmdToExecute = `cd . && bash bin/start && cd -`;
+            cmdToExecute = `cd ${repoName} && bash ../bin/start && cd -`;
             break;
         default:
             return res.status(400).json({ error: 'Invalid command' });
