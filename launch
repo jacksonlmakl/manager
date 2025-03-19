@@ -215,10 +215,10 @@ app.post('/api/execute', (req, res) => {
     
     switch(command) {
         case 'install':
-            cmdToExecute = 'git clone https://github.com/jacksonlmakl/manager.git && bash manager/bin/install';
+            cmdToExecute = 'bash manager/bin/install';
             break;
         case 'create-repo':
-            cmdToExecute = `bash bin/initialize ${githubKey} ${repoName}`;
+            cmdToExecute = `echo $(pwd) && bash ../bin/initialize ${githubKey} ${repoName}`;
             break;
         case 'push-repo':
             cmdToExecute = `cd ${repoName} && bash ../bin/push ${githubKey} ${repoName} && cd -`;
