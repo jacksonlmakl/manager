@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Ensure script exits on failure
+set -e
+
+docker compose up -d
+
+echo "Container Started"
