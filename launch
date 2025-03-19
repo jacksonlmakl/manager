@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to launch the Manager CLI Web Interface
-# Author: Claude
+# Author: Jackson Makl
 # Date: March 19, 2025
 
 echo "==============================================="
@@ -217,16 +217,16 @@ app.post('/api/execute', (req, res) => {
             cmdToExecute = `bash ../bin/initialize ${githubKey} ${repoName}`;
             break;
         case 'push-repo':
-            cmdToExecute = `cd ${repoName} && bash .../bin/push ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ~/manager/manager-web-app && bash ~/manager/bin/push ${githubKey} ${repoName} `;
             break;
         case 'pull-repo':
-            cmdToExecute = `cd ${repoName} && bash .../bin/pull ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/pull ${githubKey} ~/manager/manager-web-app/${repoName} `;
             break;
         case 'stop-containers':
-            cmdToExecute = `cd ${repoName} && bash .../bin/pull ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} `;
             break;
         case 'start-containers':
-            cmdToExecute = `cd ${repoName} && bash .../bin/pull ${githubKey} ${repoName} && cd -`;
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
             break;
         default:
             return res.status(400).json({ error: 'Invalid command' });
