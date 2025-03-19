@@ -1,7 +1,8 @@
 # Manager CLI Operations
 
 ### Install
-git clone https://github.com/jacksonlmakl/manager.git && cd manager && cd bash bin/install
+git clone https://github.com/jacksonlmakl/manager.git && cd manager 
+cd bash bin/install
 
 ### Create New Repo
 bash bin/initialize GITHUB_PERSONAL_KEY GIT_REPO_NAME
