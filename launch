@@ -199,7 +199,7 @@ const { exec } = require('child_process');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-const port = 3000;
+const port = 1100;
 
 // Middleware for parsing JSON
 app.use(bodyParser.json());
