@@ -273,21 +273,15 @@ app.post('/api/execute', (req, res) => {
                 mkdir -p "$repoPath"
                 echo "Directory '$repoPath' created."
                 cd "$repoPath"
-            
-                # Fetch GitHub username dynamically
-                _GITHUB_USER=$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)
-            
-                # Initialize Git and set up remote
+                github_user=$(curl -s -H "Authorization: token $githubKey" https://api.github.com/user | jq -r .login)
                 git init
-                git remote add origin "https://${githubKey}@github.com/${_GITHUB_USER}/${repoName}.git"
-            
+                git remote add origin https://"${githubKey}"@github.com/"${github_user}"/"${repoName}".git
                 echo "Pulled Existing Repository"
+                cd "$repoPath"
             else
                 echo "Directory '$repoPath' already exists."
                 cd "$repoPath"
             fi
-            
-            # Execute the pull script
             bash ~/manager/bin/pull ${githubKey} "$repoPath"
             `;
 
