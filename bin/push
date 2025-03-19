@@ -31,6 +31,9 @@ cd "$REPO_NAME"
 # Ensure we are on the main branch
 echo "Checking out main branch..."
 git checkout main
+git add .
+git commit -m "$(date +'%Y-%m-%d %H:%M:%S') - Auto Commit"
+
 
 # Force push the local branch to overwrite the remote branch
 echo "Force pushing local branch to overwrite remote main branch..."
