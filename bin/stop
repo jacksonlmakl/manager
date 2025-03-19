@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Ensure script exits on failure
+set -e
+
+docker compose down
+
+echo "Container Shut Down"
