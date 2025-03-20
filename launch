@@ -146,13 +146,16 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
         
         <div class="actions">
+            <label >Git:</label>
             <button style="background-color: #D3D3D3" onclick="executeCommand('create-repo')">Initialize</button>
-            <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push Repo</button>
-            <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull Repo</button>
-            <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop Containers</button>
-            <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start Containers</button>
-            <button style="background-color: #faa0d9" onclick="executeCommand('containers-list')">Container URL's</button>
-            <button style="background-color: #6C5CE7" onclick="executeCommand('add-container')">Add Container</button>
+            <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push</button>
+            <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull</button>
+            <label >Containers:</label>
+            <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop</button>
+            <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start</button>
+            <button style="background-color: #f9b15f" onclick="executeCommand('restart-containers')">Restart</button>
+            <button style="background-color: #6C5CE7" onclick="executeCommand('add-container')">Add</button>
+            <button style="background-color: #faa0d9" onclick="executeCommand('containers-list')">List</button>
 
         </div>
         
@@ -275,6 +278,9 @@ app.post('/api/execute', (req, res) => {
             break;
         case 'start-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
+            break;
+        case 'restart-containers':
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
             break;
         case 'add-container':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
