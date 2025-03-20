@@ -8,15 +8,19 @@ PORTS=$(grep -oP '^\s+- "\K(?!50|15|23)\d+(?=:\d+")' docker-compose.yml)
 
 # Extract container names
 CONTAINERS=$(grep -oP 'container_name:\s*\K\S+' docker-compose.yml)
-echo "$CONTAINERS"
+
 # Function to check if a port is active
 check_port() {
     nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
 }
 
-# Function to check if a container is running
-check_container() {
-    docker ps --format '{{.Names}}' | grep -q "^$1$" && echo "Running" || echo "Not Running"
+# Function to check if there are running processes inside the container
+check_container_activity() {
+    if docker container exec "$1" docker ps --format '{{.ID}}' | grep -q .; then
+        echo "Active"
+    else
+        echo "Inactive"
+    fi
 }
 
 # Iterate through ports and container names together
@@ -24,7 +28,14 @@ index=0
 for PORT in $PORTS; do
     CONTAINER=$(echo "$CONTAINERS" | sed -n "$((index+1))p")  # Get corresponding container
     STATUS=$(check_port "$PORT")  # Check port activity
-    CONTAINER_STATUS=$(check_container "$CONTAINER")  # Check if the container is running
+    
+    # Check container activity (processes inside the container)
+    if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER$"; then
+        CONTAINER_STATUS=$(check_container_activity "$CONTAINER")
+    else
+        CONTAINER_STATUS="Not Running"
+    fi
+    
     echo "http://$PUBLIC_IP:$PORT - $STATUS - Container: $CONTAINER ($CONTAINER_STATUS)"
     ((index++))
 done
