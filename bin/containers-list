@@ -8,7 +8,7 @@ PORTS=$(grep -oP '^\s+- "\K(?!50|15|23)\d+(?=:\d+")' docker-compose.yml)
 
 # Extract container names
 CONTAINERS=$(grep -oP 'container_name:\s*\K\S+' docker-compose.yml)
-
+echo "$CONTAINERS"
 # Function to check if a port is active
 check_port() {
     nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
