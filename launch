@@ -264,96 +264,9 @@ app.post('/api/execute', (req, res) => {
         case 'push-repo':
             cmdToExecute = `cd ~/manager/manager-web-app && bash ~/manager/bin/push ${githubKey} ${repoName} `;
             break;
-case 'pull-repo':
-    cmdToExecute = `
-        set -e  # Exit immediately if a command exits with a non-zero status
-
-        # Ensure required variables are set
-        if [ -z "${repoName}" ]; then
-            echo "ERROR: Repository name is not provided"
-            exit 1
-        fi
-
-        if [ -z "${githubKey}" ]; then
-            echo "ERROR: GitHub token is not provided"
-            exit 1
-        fi
-
-        # Use full path instead of ~ to avoid expansion issues
-        repoPath="$HOME/manager/manager-web-app/${repoName}"
-        echo "Working with repository path: $repoPath"
-
-        # Check if required tools are available
-        command -v git >/dev/null 2>&1 || { echo "ERROR: git is required but not installed"; exit 1; }
-        command -v jq >/dev/null 2>&1 || { echo "ERROR: jq is required but not installed"; exit 1; }
-        command -v curl >/dev/null 2>&1 || { echo "ERROR: curl is required but not installed"; exit 1; }
-
-        # Check if the directory exists
-        if [ ! -d "$repoPath" ]; then
-            echo "Repository directory does not exist, creating it now..."
-            
-            # Create the directory
-            mkdir -p "$repoPath" || { echo "ERROR: Failed to create directory"; exit 1; }
-            echo "Directory '$repoPath' created successfully."
-            
-            cd "$repoPath" || { echo "ERROR: Failed to change to directory"; exit 1; }
-
-            # Initialize Git
-            git init || { echo "ERROR: Failed to initialize git repository"; exit 1; }
-            echo "Git repository initialized."
-
-            # Fetch GitHub username dynamically
-            echo "Fetching GitHub username..."
-            _GITHUB_USER=$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)
-
-            # Ensure GitHub username was fetched correctly
-            if [ -z "$_GITHUB_USER" ] || [ "$_GITHUB_USER" = "null" ]; then
-                echo "ERROR: Failed to retrieve GitHub username. Check your token permissions."
-                exit 1
-            fi
-            echo "GitHub username retrieved: $_GITHUB_USER"
-
-            # Set up GitHub remote repository
-            echo "Setting up remote repository..."
-            git remote add origin "https://${_GITHUB_USER}:${githubKey}@github.com/${_GITHUB_USER}/${repoName}.git" || { 
-                echo "ERROR: Failed to add remote origin. Repository might not exist."; 
-                exit 1; 
-            }
-
-            # Configure Git user if not set
-            if [ -z "$(git config user.email)" ]; then
-                git config user.email "automated@example.com"
-                git config user.name "Automated Process"
-            fi
-
-            # Create an empty commit to allow branch renaming
-            git commit --allow-empty -m "Initial commit" || { echo "ERROR: Failed to create initial commit"; exit 1; }
-            echo "Created initial commit."
-
-            # Rename branch to 'main'
-            git branch -m main || { echo "ERROR: Failed to rename branch"; exit 1; }
-            echo "Branch renamed to 'main'."
-
-            echo "Repository setup completed successfully."
-        else
-            echo "Directory '$repoPath' already exists."
-            cd "$repoPath" || { echo "ERROR: Failed to change to existing directory"; exit 1; }
-        fi
-
-        # Check if pull script exists
-        pullScript="$HOME/manager/bin/pull"
-        if [ ! -f "$pullScript" ]; then
-            echo "ERROR: Pull script not found at $pullScript"
-            exit 1
-        fi
-
-        # Execute the pull script
-        echo "Executing pull script..."
-        bash "$pullScript" "${githubKey}" "$repoPath" || { echo "ERROR: Pull script failed"; exit 1; }
-        echo "Pull operation completed successfully."
-    `;
-    break;
-
+        case 'pull-repo':
+            cmdToExecute = `cd ~/manager/manager-web-app && bash ~/manager/bin/pull ${githubKey} ${repoName} `;
+            break;
         case 'stop-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} `;
             break;
