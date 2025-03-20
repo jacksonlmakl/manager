@@ -274,7 +274,7 @@ app.post('/api/execute', (req, res) => {
                 echo "Directory '$repoPath' created."
                 cd "$repoPath"
                 git init
-                gitHubUser=$(curl -s -H Authorization: token "${githubKey}" https://api.github.com/user | jq -r .login) git remote add origin https://"${githubKey}"@github.com/"${gitHubUser}"/"${repoName}".git
+                git remote add origin https://"${githubKey}"@github.com/"$(curl -s -H Authorization: token "${githubKey}" https://api.github.com/user | jq -r .login)"/"${repoName}".git
                 echo "Pulled Existing Repository"
                 cd "$repoPath"
             else
