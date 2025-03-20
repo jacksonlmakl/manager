@@ -151,6 +151,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
             <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull Repo</button>
             <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop Containers</button>
             <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start Containers</button>
+            <button style="background-color: #6C5CE7" onclick="executeCommand('add-container')">Add Container</button>
+
         </div>
         
         <div class="loading" id="loading">
@@ -272,6 +274,9 @@ app.post('/api/execute', (req, res) => {
             break;
         case 'start-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
+            break;
+        case 'add-container':
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
             break;
         default:
             return res.status(400).json({ error: 'Invalid command' });
