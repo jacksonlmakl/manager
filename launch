@@ -145,15 +145,14 @@ cat > "$APP_DIR/index.html" << 'EOL'
           <label for="remember-repo">Remember repository</label>
         </div>
         
-        <div class="actions">
             <label for="git-actions">Git:</label>
-<div id="git-actions">
+<div div class="actions" id="git-actions">
             <button style="background-color: #D3D3D3" onclick="executeCommand('create-repo')">Initialize</button>
             <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push</button>
             <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull</button>
 </div>
             <label for="container-actions">Containers:</label>
-<div id="container-actions">
+<div div class="actions" id="container-actions">
             <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop</button>
             <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start</button>
             <button style="background-color: #f9b15f" onclick="executeCommand('restart-containers')">Restart</button>
@@ -161,7 +160,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             <button style="background-color: #faa0d9" onclick="executeCommand('containers-list')">List</button>
 </div>
 
-        </div>
         
         <div class="loading" id="loading">
             <div class="spinner"></div>
