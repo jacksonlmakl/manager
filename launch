@@ -264,40 +264,50 @@ app.post('/api/execute', (req, res) => {
         case 'push-repo':
             cmdToExecute = `cd ~/manager/manager-web-app && bash ~/manager/bin/push ${githubKey} ${repoName} `;
             break;
-        case 'pull-repo':
-            cmdToExecute = `
-            repoPath=~/manager/manager-web-app/${repoName}
-            export repoPath
-            # Check if the directory exists
-            if [ ! -d "$repoPath" ]; then
-                # Create the directory
-                mkdir -p "$repoPath"
-                echo "Directory '$repoPath' created."
-                cd "$repoPath"
-            
-                # Initialize Git
-                git init
-            
-                # Set up GitHub remote repository
-                _GITHUB_USER=$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)
-                git remote add origin https://"${githubKey}"@github.com/"${_GITHUB_USER}"/"${repoName}".git
-            
-                # Create an empty commit to allow branch renaming
-                git commit --allow-empty -m "Initial commit"
-            
-                # Rename branch to 'main'
-                git branch -m main
-            
-                echo "Pulled Existing Repository"
-            else
-                echo "Directory '$repoPath' already exists."
-                cd "$repoPath"
-            fi
-            
-            # Execute the pull script
-            bash ~/manager/bin/pull "${githubKey}" "$repoPath"
+case 'pull-repo':
+    cmdToExecute = `
+        repoPath=~/manager/manager-web-app/${repoName}
 
-            break;
+        # Check if the directory exists
+        if [ ! -d "$repoPath" ]; then
+            # Create the directory
+            mkdir -p "$repoPath"
+            echo "Directory '$repoPath' created."
+            cd "$repoPath"
+
+            # Initialize Git
+            git init
+
+            # Fetch GitHub username dynamically
+            _GITHUB_USER=$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)
+
+            # Ensure GitHub username was fetched correctly
+            if [ -z "$_GITHUB_USER" ]; then
+                echo "Failed to retrieve GitHub username."
+                exit 1
+            fi
+
+            # Set up GitHub remote repository
+            git remote add origin https://"${githubKey}"@github.com/"${_GITHUB_USER}"/"${repoName}".git
+
+            # Create an empty commit to allow branch renaming
+            git commit --allow-empty -m "Initial commit"
+
+            # Rename branch to 'main'
+            git branch -m main
+
+            echo "Pulled Existing Repository"
+        else
+            echo "Directory '$repoPath' already exists."
+            cd "$repoPath"
+        fi
+
+        # Execute the pull script
+        bash ~/manager/bin/pull "${githubKey}" "$repoPath"
+    `;
+    break;
+
+
         case 'stop-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} `;
             break;
