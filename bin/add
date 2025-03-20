@@ -65,4 +65,4 @@ cat <<EOL >> "$COMPOSE_FILE"
     container_name: framework-app-$NEW_CONTAINER_NUM
 EOL
 
-echo "Added framework-$NEW_CONTAINER_NUM to $COMPOSE_FILE with ports $NEW_120_PORT and $NEW_150_PORT"
+echo "Added framework-$NEW_CONTAINER_NUM to $COMPOSE_FILE with ports $NEW_120_PORT"
