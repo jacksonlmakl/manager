@@ -146,11 +146,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
         
         <div class="actions">
-            <button style="background-color: #2aceeb" onclick="executeCommand('create-repo')">Initialize</button>
-            <button onclick="executeCommand('push-repo')">Push Repo</button>
-            <button onclick="executeCommand('pull-repo')">Pull Repo</button>
-            <button onclick="executeCommand('stop-containers')">Stop Containers</button>
-            <button onclick="executeCommand('start-containers')">Start Containers</button>
+            <button style="background-color: #D3D3D3" onclick="executeCommand('create-repo')">Initialize</button>
+            <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push Repo</button>
+            <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull Repo</button>
+            <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop Containers</button>
+            <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start Containers</button>
         </div>
         
         <div class="loading" id="loading">
