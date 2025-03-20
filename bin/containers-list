@@ -6,13 +6,25 @@ PUBLIC_IP=$(curl -s ifconfig.me)
 # Extract the first ports from the mappings in the docker-compose.yml file, excluding ports starting with 50, 15, or 23
 PORTS=$(grep -oP '^\s+- "\K(?!50|15|23)\d+(?=:\d+")' docker-compose.yml)
 
+# Extract container names
+CONTAINERS=$(grep -oP 'container_name:\s*\K\S+' docker-compose.yml)
+
 # Function to check if a port is active
 check_port() {
     nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
 }
 
-# Print the URLs and their status
+# Function to check if a container is running
+check_container() {
+    docker ps --format '{{.Names}}' | grep -q "^$1$" && echo "Running" || echo "Not Running"
+}
+
+# Iterate through ports and container names together
+index=0
 for PORT in $PORTS; do
-    STATUS=$(check_port "$PORT")
-    echo "http://$PUBLIC_IP:$PORT - $STATUS"
+    CONTAINER=$(echo "$CONTAINERS" | sed -n "$((index+1))p")  # Get corresponding container
+    STATUS=$(check_port "$PORT")  # Check port activity
+    CONTAINER_STATUS=$(check_container "$CONTAINER")  # Check if the container is running
+    echo "http://$PUBLIC_IP:$PORT - $STATUS - Container: $CONTAINER ($CONTAINER_STATUS)"
+    ((index++))
 done
