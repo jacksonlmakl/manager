@@ -14,9 +14,13 @@ check_port() {
     nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
 }
 
-# Function to check if there are running processes inside the container
+# Function to check if the container has active processes inside
 check_container_activity() {
-    if docker container exec "$1" docker ps --format '{{.ID}}' | grep -q .; then
+    # Run 'ps aux' inside the container and count the number of lines
+    ACTIVE_PROCESS_COUNT=$(docker exec "$1" ps aux 2>/dev/null | wc -l)
+
+    # If more than one line (i.e., more than just the header), mark as Active
+    if [[ "$ACTIVE_PROCESS_COUNT" -gt 1 ]]; then
         echo "Active"
     else
         echo "Inactive"
@@ -29,7 +33,7 @@ for PORT in $PORTS; do
     CONTAINER=$(echo "$CONTAINERS" | sed -n "$((index+1))p")  # Get corresponding container
     STATUS=$(check_port "$PORT")  # Check port activity
     
-    # Check container activity (processes inside the container)
+    # Check if container exists
     if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER$"; then
         CONTAINER_STATUS=$(check_container_activity "$CONTAINER")
     else
