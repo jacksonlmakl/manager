@@ -3,11 +3,16 @@
 # Get the public IP address of the current host
 PUBLIC_IP=$(curl -s ifconfig.me)
 
-# Extract the first ports from the mappings in the docker-compose.yaml file
+# Extract the first ports from the mappings in the docker-compose.yml file, excluding ports starting with 50, 15, or 23
 PORTS=$(grep -oP '^\s+- "\K(?!50|15|23)\d+(?=:\d+")' docker-compose.yml)
 
-# Print the URLs in the required format
-for PORT in $PORTS; do
-    echo "http://$PUBLIC_IP:$PORT"
-done
+# Function to check if a port is active
+check_port() {
+    nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
+}
 
+# Print the URLs and their status
+for PORT in $PORTS; do
+    STATUS=$(check_port "$PORT")
+    echo "http://$PUBLIC_IP:$PORT - $STATUS"
+done
