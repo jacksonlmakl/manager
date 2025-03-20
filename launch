@@ -146,7 +146,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
         
         <div class="actions">
-            <button onclick="executeCommand('create-repo')">Create New Repo</button>
+            <button style="background-color: red" onclick="executeCommand('create-repo')">Initialize Repository</button>
             <button onclick="executeCommand('push-repo')">Push Repo</button>
             <button onclick="executeCommand('pull-repo')">Pull Repo</button>
             <button onclick="executeCommand('stop-containers')">Stop Containers</button>
