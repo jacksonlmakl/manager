@@ -29,8 +29,20 @@ fi
 # Check if the directory exists
 if [ ! -d "$REPO_NAME" ]; then
     # Create the directory
-    git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git"
+    mkdir =p "$REPO_NAME"
     cd "$REPO_NAME"
+    # Initialize Git if not already initialized
+    if [ ! -d ".git" ]; then
+        git init
+        echo "Initialized empty Git repository in $REPO_NAME"
+    fi
+    git clone --depth=1 "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git" -f
+    # Set or update the GitHub remote URL
+    git remote remove origin 2>/dev/null  # Prevent duplicate remote errors
+    git remote add origin "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git"
+    
+    # Fetch all branches from remote
+    git fetch --all
 else
     echo "Directory '$REPO_NAME' already exists."
     cd "$REPO_NAME"
