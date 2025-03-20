@@ -146,7 +146,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
         
             <label for="git-actions">Git:</label>
-<div div class="actions" style="margin-bottom: 10px; margin-top: 10px;" id="git-actions">
+<div div class="actions" style="margin-bottom: 10px; margin-top: 40px;" id="git-actions">
             <button style="background-color: #D3D3D3" onclick="executeCommand('create-repo')">Initialize</button>
             <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push</button>
             <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull</button>
