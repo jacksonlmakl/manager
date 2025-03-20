@@ -33,8 +33,9 @@ if [ ! -d "$REPO_NAME" ]; then
     cd "$REPO_NAME"
     echo "Directory '$REPO_NAME' created."
     git remote add origin "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$REPO_NAME.git"
-    git fetch origin main
     git checkout main
+    git fetch origin main
+    
     git pull origin main -f
 else
     echo "Directory '$REPO_NAME' already exists."
