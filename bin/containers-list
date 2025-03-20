@@ -14,19 +14,19 @@ check_port() {
     nc -z -w2 "$PUBLIC_IP" "$1" && echo "Active" || echo "Inactive"
 }
 
-# Function to check if the container is running any processes
-check_container_activity() {
-    # Check if the container is running
-    if [[ "$(docker inspect --format='{{.State.Running}}' "$1" 2>/dev/null)" == "true" ]]; then
-        # Check if there are any running processes inside
-        PROCESS_COUNT=$(docker exec "$1" sh -c 'ls /proc' 2>/dev/null | wc -l)
-        if [[ "$PROCESS_COUNT" -gt 2 ]]; then
+# Function to check if Docker is installed and if containers are running inside the container
+check_inner_docker() {
+    # Check if Docker is installed inside the container
+    if docker exec "$1" sh -c 'command -v docker' &>/dev/null; then
+        # Docker is installed, now check if any containers are running inside
+        if docker exec "$1" sh -c 'docker ps -q' 2>/dev/null | grep -q .; then
             echo "Active"
         else
             echo "Inactive"
         fi
     else
-        echo "Not Running"
+        # Docker is not installed inside the container
+        echo "Inactive"
     fi
 }
 
@@ -35,7 +35,13 @@ index=0
 for PORT in $PORTS; do
     CONTAINER=$(echo "$CONTAINERS" | sed -n "$((index+1))p")  # Get corresponding container
     STATUS=$(check_port "$PORT")  # Check port activity
-    CONTAINER_STATUS=$(check_container_activity "$CONTAINER")  # Check container process activity
+    
+    # Check if the outer container exists before checking inner Docker status
+    if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER$"; then
+        CONTAINER_STATUS=$(check_inner_docker "$CONTAINER")
+    else
+        CONTAINER_STATUS="Not Running"
+    fi
     
     echo "http://$PUBLIC_IP:$PORT - $STATUS - Container: $CONTAINER ($CONTAINER_STATUS)"
     ((index++))
