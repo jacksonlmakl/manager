@@ -267,23 +267,35 @@ app.post('/api/execute', (req, res) => {
         case 'pull-repo':
             cmdToExecute = `
             repoPath=~/manager/manager-web-app/${repoName}
+            export repoPath
             # Check if the directory exists
             if [ ! -d "$repoPath" ]; then
                 # Create the directory
                 mkdir -p "$repoPath"
                 echo "Directory '$repoPath' created."
                 cd "$repoPath"
+            
+                # Initialize Git
                 git init
-                git remote add origin https://"${githubKey}"@github.com/"$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)"/"${repoName}".git
+            
+                # Set up GitHub remote repository
+                _GITHUB_USER=$(curl -s -H "Authorization: token ${githubKey}" https://api.github.com/user | jq -r .login)
+                git remote add origin https://"${githubKey}"@github.com/"${_GITHUB_USER}"/"${repoName}".git
+            
+                # Create an empty commit to allow branch renaming
+                git commit --allow-empty -m "Initial commit"
+            
+                # Rename branch to 'main'
                 git branch -m main
+            
                 echo "Pulled Existing Repository"
-                cd "$repoPath"
             else
                 echo "Directory '$repoPath' already exists."
                 cd "$repoPath"
             fi
-            bash ~/manager/bin/pull ${githubKey} "$repoPath"
-            `;
+            
+            # Execute the pull script
+            bash ~/manager/bin/pull "${githubKey}" "$repoPath"
 
             break;
         case 'stop-containers':
