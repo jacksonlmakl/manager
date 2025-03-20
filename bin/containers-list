@@ -4,7 +4,7 @@
 PUBLIC_IP=$(curl -s ifconfig.me)
 
 # Extract the first ports from the mappings in the docker-compose.yaml file
-PORTS=$(grep -oP '^\s+- "\K(?!50|15)\d+(?=:\d+")' docker-compose.yml)
+PORTS=$(grep -oP '^\s+- "\K(?!50|15|23)\d+(?=:\d+")' docker-compose.yml)
 
 # Print the URLs in the required format
 for PORT in $PORTS; do
