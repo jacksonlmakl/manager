@@ -25,163 +25,375 @@ cat > "$APP_DIR/index.html" << 'EOL'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Container Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #2E77D0;
+            --primary-dark: #1E63B0;
+            --secondary: #6C757D;
+            --success: #28A745;
+            --info: #17A2B8;
+            --warning: #FFC107;
+            --danger: #DC3545;
+            --light: #F8F9FA;
+            --dark: #343A40;
+            --surface: #FFFFFF;
+            --bg: #F9FAFB;
+            --border: #E2E8F0;
+            --text: #1A202C;
+            --text-secondary: #718096;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
         }
+
         .container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
-        h1 {
-            color: #333;
-            text-align: center;
+
+        .app-header {
+            display: flex;
+            align-items: center;
             margin-bottom: 30px;
         }
-        .checkbox-container {
-          display: flex;
-          align-items: center;
-          margin-top: 10px;
+
+        .app-header h1 {
+            font-weight: 700;
+            font-size: 28px;
+            color: var(--text);
         }
-        .checkbox-container input {
-          margin-right: 10px;
+
+        .app-header .logo {
+            margin-right: 15px;
+            background-color: var(--primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
         }
+
+        .card {
+            background-color: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
-        input[type="text"], input[type="password"] {
+
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border 0.3s, box-shadow 0.3s;
+            background-color: var(--bg);
         }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 119, 208, 0.15);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .command-section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
         .actions {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
         }
+
         button {
-            padding: 12px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 4px;
-            background-color: #4CAF50;
+            border-radius: 8px;
+            background-color: var(--primary);
             color: white;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         button:hover {
-            background-color: #45a049;
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f8f8;
-            border-radius: 4px;
-            border-left: 4px solid #4CAF50;
+
+        button:active {
+            transform: translateY(0);
+            filter: brightness(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        /* Button colors */
+        .btn-initialize { background-color: var(--secondary); }
+        .btn-push { background-color: var(--primary); }
+        .btn-pull { background-color: var(--info); }
+        .btn-stop { background-color: var(--danger); }
+        .btn-start { background-color: var(--success); }
+        .btn-restart { background-color: var(--warning); color: var(--dark); }
+        .btn-add { background-color: var(--primary-dark); }
+        .btn-list { background-color: var(--secondary); }
+
+        .output-container {
+            margin-top: 24px;
+        }
+
+        .terminal {
+            background-color: #1E1E1E;
+            color: #F8F8F8;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 14px;
+            line-height: 1.5;
             white-space: pre-wrap;
-            font-family: monospace;
-            min-height: 200px;
-            max-height: 400px;
             overflow-y: auto;
+            max-height: 400px;
+            min-height: 200px;
         }
-        .command-title {
-            font-weight: bold;
-            margin-top: 10px;
-            color: #333;
-        }
+
         .loading {
             display: none;
             text-align: center;
-            margin-top: 20px;
+            margin: 20px 0;
         }
+
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
+            display: inline-block;
             width: 36px;
             height: 36px;
+            border: 3px solid rgba(46, 119, 208, 0.2);
             border-radius: 50%;
-            border-left-color: #4CAF50;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-bar {
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Container Manager</h1>
-        
-        <div class="form-group">
-            <label for="github-key">GitHub Personal Access Token:</label>
-            <input type="password" id="github-key" placeholder="Enter your GitHub Personal Access Token">
+        <div class="app-header">
+            <div class="logo">
+                <i class="fas fa-cubes"></i>
+            </div>
+            <h1>Container Manager</h1>
         </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2>Configuration</h2>
+            </div>
+            
+            <div class="form-group">
+                <label for="github-key">GitHub Personal Access Token</label>
+                <input type="password" id="github-key" placeholder="Enter your GitHub Personal Access Token">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="remember-key" checked>
+                    <label for="remember-key">Remember token</label>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="repo-name">Repository Name:</label>
-            <input type="text" id="repo-name" placeholder="Enter repository name">
-        </div>
-        <div class="checkbox-container">
-          <input type="checkbox" id="remember-key" checked>
-          <label for="remember-key">Remember token</label>
-        </div>
-        <div class="checkbox-container" style="margin-bottom: 30px !important;">
-          <input type="checkbox" id="remember-repo" checked>
-          <label for="remember-repo">Remember repository</label>
+            <div class="form-group">
+                <label for="repo-name">Repository Name</label>
+                <input type="text" id="repo-name" placeholder="Enter repository name">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="remember-repo" checked>
+                    <label for="remember-repo">Remember repository</label>
+                </div>
+            </div>
         </div>
         
-            <label for="git-actions">Git:</label>
-<div div class="actions" style=" margin-top: 10px; margin-bottom: 10px;" id="git-actions">
-            <button style="background-color: #D3D3D3" onclick="executeCommand('create-repo')">Initialize</button>
-            <button style="background-color: #74B9FF" onclick="executeCommand('push-repo')">Push</button>
-            <button style="background-color: #FDCB6E" onclick="executeCommand('pull-repo')">Pull</button>
-</div>
-            <label for="container-actions">Containers:</label>
-<div div class="actions" id="container-actions">
-            <button style="background-color: #FAB1A0" onclick="executeCommand('stop-containers')">Stop</button>
-            <button style="background-color: #6ed6b9" onclick="executeCommand('start-containers')">Start</button>
-            <button style="background-color: #f9b15f" onclick="executeCommand('restart-containers')">Restart</button>
-            <button style="background-color: #6C5CE7" onclick="executeCommand('add-container')">Add</button>
-            <button style="background-color: #faa0d9" onclick="executeCommand('containers-list')">List</button>
-</div>
-
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Executing command, please wait...</p>
+        <div class="card">
+            <div class="card-header">
+                <h2>Operations</h2>
+            </div>
+            
+            <div class="command-section">
+                <div class="section-title">
+                    <i class="fab fa-git-alt"></i> Git Operations
+                </div>
+                <div class="actions" id="git-actions">
+                    <button class="btn-initialize" onclick="executeCommand('create-repo')">
+                        <i class="fas fa-code-branch"></i> Initialize
+                    </button>
+                    <button class="btn-push" onclick="executeCommand('push-repo')">
+                        <i class="fas fa-upload"></i> Push
+                    </button>
+                    <button class="btn-pull" onclick="executeCommand('pull-repo')">
+                        <i class="fas fa-download"></i> Pull
+                    </button>
+                </div>
+            </div>
+            
+            <div class="command-section">
+                <div class="section-title">
+                    <i class="fas fa-server"></i> Container Operations
+                </div>
+                <div class="actions" id="container-actions">
+                    <button class="btn-stop" onclick="executeCommand('stop-containers')">
+                        <i class="fas fa-stop-circle"></i> Stop
+                    </button>
+                    <button class="btn-start" onclick="executeCommand('start-containers')">
+                        <i class="fas fa-play-circle"></i> Start
+                    </button>
+                    <button class="btn-restart" onclick="executeCommand('restart-containers')">
+                        <i class="fas fa-sync"></i> Restart
+                    </button>
+                    <button class="btn-add" onclick="executeCommand('add-container')">
+                        <i class="fas fa-plus-circle"></i> Add
+                    </button>
+                    <button class="btn-list" onclick="executeCommand('containers-list')">
+                        <i class="fas fa-list"></i> List
+                    </button>
+                </div>
+            </div>
         </div>
         
-        <div class="command-title">Command Output:</div>
-        <div id="output">No command executed yet.</div>
+        <div class="card output-container">
+            <div class="card-header">
+                <h2>Command Output</h2>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Executing command, please wait...</p>
+            </div>
+            
+            <div class="terminal" id="output">No command executed yet.</div>
+        </div>
+        
+        <div class="status-bar">
+            <div>Manager CLI Web Interface</div>
+            <div>© 2025 Jackson Makl</div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-          const savedGithubKey = localStorage.getItem('githubKey');
-          if (savedGithubKey) {
-            document.getElementById('github-key').value = savedGithubKey;
-          }
-          
-          const savedRepoName = localStorage.getItem('repoName');
-          if (savedRepoName) {
-            document.getElementById('repo-name').value = savedRepoName;
-          }
+            const savedGithubKey = localStorage.getItem('githubKey');
+            if (savedGithubKey) {
+                document.getElementById('github-key').value = savedGithubKey;
+            }
+            
+            const savedRepoName = localStorage.getItem('repoName');
+            if (savedRepoName) {
+                document.getElementById('repo-name').value = savedRepoName;
+            }
         });
+        
         function executeCommand(command) {
             const githubKey = document.getElementById('github-key').value;
             const repoName = document.getElementById('repo-name').value;
@@ -189,29 +401,25 @@ cat > "$APP_DIR/index.html" << 'EOL'
             const loadingElement = document.getElementById('loading');
             const rememberKey = document.getElementById('remember-key').checked;
             const rememberRepo = document.getElementById('remember-repo').checked;
+            
             // Validate inputs
             if (!githubKey || !repoName) {
                 outputElement.textContent = "Error: GitHub Personal Access Token and Repository Name are required!";
                 return;
             }
+            
             if (rememberKey) {
-              localStorage.setItem('githubKey', githubKey);
+                localStorage.setItem('githubKey', githubKey);
             } else {
-              localStorage.removeItem('githubKey');
+                localStorage.removeItem('githubKey');
             }
             
             if (rememberRepo) {
-              localStorage.setItem('repoName', repoName);
+                localStorage.setItem('repoName', repoName);
             } else {
-              localStorage.removeItem('repoName');
+                localStorage.removeItem('repoName');
             }
-
             
-            if (rememberRepo) {
-              localStorage.setItem('repoName', repoName);
-            } else {
-              localStorage.removeItem('repoName');
-            }
             // Show loading indicator
             loadingElement.style.display = 'block';
             outputElement.textContent = `Executing ${command}...`;
