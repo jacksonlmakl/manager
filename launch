@@ -288,7 +288,7 @@ app.post('/api/execute', (req, res) => {
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
             break;
         case 'containers-list':
-            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/containers-list `;
+            cmdToExecute = `scd ~/manager/manager-web-app/${repoName} && sudo bash ~/manager/bin/containers-list `;
             break;
         default:
             return res.status(400).json({ error: 'Invalid command' });
