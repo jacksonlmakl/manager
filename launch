@@ -28,21 +28,25 @@ cat > "$APP_DIR/index.html" << 'EOL'
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2E77D0;
-            --primary-dark: #1E63B0;
-            --secondary: #6C757D;
-            --success: #28A745;
-            --info: #17A2B8;
-            --warning: #FFC107;
-            --danger: #DC3545;
-            --light: #F8F9FA;
-            --dark: #343A40;
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --primary-light: #EEF2FF;
+            --secondary: #64748B;
+            --success: #10B981;
+            --info: #0EA5E9;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --light: #F8FAFC;
+            --dark: #1E293B;
             --surface: #FFFFFF;
-            --bg: #F9FAFB;
+            --bg: #F1F5F9;
             --border: #E2E8F0;
-            --text: #1A202C;
-            --text-secondary: #718096;
+            --text: #0F172A;
+            --text-secondary: #64748B;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.2s ease-in-out;
         }
 
         * {
@@ -59,42 +63,61 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 40px auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .app-header {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
 
         .app-header h1 {
             font-weight: 700;
             font-size: 28px;
             color: var(--text);
+            margin-left: 16px;
+            letter-spacing: -0.5px;
         }
 
         .app-header .logo {
-            margin-right: 15px;
-            background-color: var(--primary);
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 24px;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .app-header .version {
+            margin-left: auto;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .card {
             background-color: var(--surface);
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             padding: 24px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
 
         .card-header {
@@ -102,44 +125,71 @@ cat > "$APP_DIR/index.html" << 'EOL'
             justify-content: space-between;
             align-items: center;
             padding-bottom: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
 
         .card-header h2 {
             font-weight: 600;
-            font-size: 18px;
+            font-size: 20px;
             color: var(--text);
+            display: flex;
+            align-items: center;
+        }
+
+        .card-header h2 i {
+            margin-right: 12px;
+            color: var(--primary);
+            font-size: 18px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--text-secondary);
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 16px 12px 46px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 15px;
-            transition: border 0.3s, box-shadow 0.3s;
-            background-color: var(--bg);
+            transition: var(--transition);
+            background-color: var(--surface);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(46, 119, 208, 0.15);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        .input-help {
+            margin-top: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
         }
 
         .checkbox-container {
@@ -150,62 +200,65 @@ cat > "$APP_DIR/index.html" << 'EOL'
 
         .checkbox-container input[type="checkbox"] {
             margin-right: 10px;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             accent-color: var(--primary);
+            cursor: pointer;
         }
 
         .checkbox-container label {
             margin-bottom: 0;
             font-size: 14px;
             color: var(--text);
+            cursor: pointer;
         }
 
         .command-section {
-            margin-top: 24px;
+            margin-top: 28px;
         }
 
         .section-title {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             color: var(--text);
             display: flex;
             align-items: center;
         }
 
         .section-title i {
-            margin-right: 8px;
+            margin-right: 10px;
             color: var(--primary);
         }
 
         .actions {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
             margin-bottom: 24px;
         }
 
         button {
-            padding: 10px 16px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             background-color: var(--primary);
             color: white;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            height: 45px;
         }
 
         button:hover {
-            filter: brightness(1.05);
+            filter: brightness(1.1);
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         button:active {
@@ -219,31 +272,109 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         /* Button colors */
-        .btn-initialize { background-color: var(--secondary); }
-        .btn-push { background-color: var(--primary); }
-        .btn-pull { background-color: var(--info); }
-        .btn-stop { background-color: var(--danger); }
-        .btn-start { background-color: var(--success); }
-        .btn-restart { background-color: var(--warning); color: var(--dark); }
-        .btn-add { background-color: var(--primary-dark); }
-        .btn-list { background-color: var(--secondary); }
+        .btn-initialize { 
+            background-color: var(--secondary); 
+            background: linear-gradient(135deg, var(--secondary), #4B5563);
+        }
+        .btn-push { 
+            background-color: var(--primary); 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        .btn-pull { 
+            background-color: var(--info); 
+            background: linear-gradient(135deg, var(--info), #0284C7);
+        }
+        .btn-stop { 
+            background-color: var(--danger); 
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+        }
+        .btn-start { 
+            background-color: var(--success); 
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+        .btn-restart { 
+            background-color: var(--warning); 
+            background: linear-gradient(135deg, var(--warning), #D97706);
+            color: var(--dark);
+        }
+        .btn-add { 
+            background-color: var(--primary-dark); 
+            background: linear-gradient(135deg, #6366F1, var(--primary-dark));
+        }
+        .btn-list { 
+            background-color: var(--secondary); 
+            background: linear-gradient(135deg, #64748B, #475569);
+        }
 
         .output-container {
             margin-top: 24px;
         }
 
+        .card-header .actions-menu {
+            display: flex;
+            gap: 12px;
+        }
+
+        .card-header .actions-menu button {
+            background-color: transparent;
+            color: var(--text-secondary);
+            box-shadow: none;
+            padding: 6px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .card-header .actions-menu button:hover {
+            background-color: var(--bg);
+            color: var(--primary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .terminal-header {
+            background-color: #1A1A1A;
+            color: #E0E0E0;
+            padding: 10px 16px;
+            border-radius: 12px 12px 0 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-header .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .terminal-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-header .dot-red { background-color: #FF5F56; }
+        .terminal-header .dot-yellow { background-color: #FFBD2E; }
+        .terminal-header .dot-green { background-color: #27C93F; }
+
         .terminal {
             background-color: #1E1E1E;
             color: #F8F8F8;
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 0 0 12px 12px;
             font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             white-space: pre-wrap;
             overflow-y: auto;
             max-height: 400px;
             min-height: 200px;
+        }
+
+        .terminal::before {
+            content: "$ ";
+            color: #27C93F;
         }
 
         .loading {
@@ -254,9 +385,9 @@ cat > "$APP_DIR/index.html" << 'EOL'
 
         .spinner {
             display: inline-block;
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(46, 119, 208, 0.2);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 70, 229, 0.2);
             border-radius: 50%;
             border-top-color: var(--primary);
             animation: spin 1s ease-in-out infinite;
@@ -267,18 +398,76 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         .status-bar {
-            margin-top: 30px;
+            margin-top: 36px;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 14px;
             display: flex;
             justify-content: space-between;
-            padding-top: 16px;
+            padding-top: 20px;
             border-top: 1px solid var(--border);
         }
 
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+                margin: 24px auto;
+            }
+            
             .actions {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .app-header .version {
+                display: none;
             }
         }
     </style>
@@ -290,16 +479,29 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 <i class="fas fa-cubes"></i>
             </div>
             <h1>Container Manager</h1>
+            <span class="version">v2.1.0</span>
         </div>
         
         <div class="card">
             <div class="card-header">
-                <h2>Configuration</h2>
+                <h2><i class="fas fa-cog"></i>Configuration</h2>
+                <div class="actions-menu">
+                    <button title="Import settings" aria-label="Import settings">
+                        <i class="fas fa-file-import"></i>
+                    </button>
+                    <button title="Export settings" aria-label="Export settings">
+                        <i class="fas fa-file-export"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="form-group">
                 <label for="github-key">GitHub Personal Access Token</label>
-                <input type="password" id="github-key" placeholder="Enter your GitHub Personal Access Token">
+                <div class="input-wrapper">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="github-key" placeholder="Enter your GitHub Personal Access Token">
+                </div>
+                <div class="input-help">Your GitHub token will be used for repository operations.</div>
                 <div class="checkbox-container">
                     <input type="checkbox" id="remember-key" checked>
                     <label for="remember-key">Remember token</label>
@@ -308,7 +510,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
 
             <div class="form-group">
                 <label for="repo-name">Repository Name</label>
-                <input type="text" id="repo-name" placeholder="Enter repository name">
+                <div class="input-wrapper">
+                    <i class="fas fa-code-branch"></i>
+                    <input type="text" id="repo-name" placeholder="Enter repository name">
+                </div>
+                <div class="input-help">The repository name without the organization prefix.</div>
                 <div class="checkbox-container">
                     <input type="checkbox" id="remember-repo" checked>
                     <label for="remember-repo">Remember repository</label>
@@ -318,7 +524,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
         
         <div class="card">
             <div class="card-header">
-                <h2>Operations</h2>
+                <h2><i class="fas fa-terminal"></i>Operations</h2>
             </div>
             
             <div class="command-section">
@@ -326,14 +532,17 @@ cat > "$APP_DIR/index.html" << 'EOL'
                     <i class="fab fa-git-alt"></i> Git Operations
                 </div>
                 <div class="actions" id="git-actions">
-                    <button class="btn-initialize" onclick="executeCommand('create-repo')">
+                    <button class="btn-initialize tooltip" onclick="executeCommand('create-repo')">
                         <i class="fas fa-code-branch"></i> Initialize
+                        <span class="tooltiptext">Initialize a new Git repository</span>
                     </button>
-                    <button class="btn-push" onclick="executeCommand('push-repo')">
+                    <button class="btn-push tooltip" onclick="executeCommand('push-repo')">
                         <i class="fas fa-upload"></i> Push
+                        <span class="tooltiptext">Push changes to the remote repository</span>
                     </button>
-                    <button class="btn-pull" onclick="executeCommand('pull-repo')">
+                    <button class="btn-pull tooltip" onclick="executeCommand('pull-repo')">
                         <i class="fas fa-download"></i> Pull
+                        <span class="tooltiptext">Pull latest changes from the remote repository</span>
                     </button>
                 </div>
             </div>
@@ -343,20 +552,25 @@ cat > "$APP_DIR/index.html" << 'EOL'
                     <i class="fas fa-server"></i> Container Operations
                 </div>
                 <div class="actions" id="container-actions">
-                    <button class="btn-stop" onclick="executeCommand('stop-containers')">
+                    <button class="btn-stop tooltip" onclick="executeCommand('stop-containers')">
                         <i class="fas fa-stop-circle"></i> Stop
+                        <span class="tooltiptext">Stop all running containers</span>
                     </button>
-                    <button class="btn-start" onclick="executeCommand('start-containers')">
+                    <button class="btn-start tooltip" onclick="executeCommand('start-containers')">
                         <i class="fas fa-play-circle"></i> Start
+                        <span class="tooltiptext">Start all containers</span>
                     </button>
-                    <button class="btn-restart" onclick="executeCommand('restart-containers')">
+                    <button class="btn-restart tooltip" onclick="executeCommand('restart-containers')">
                         <i class="fas fa-sync"></i> Restart
+                        <span class="tooltiptext">Restart all containers</span>
                     </button>
-                    <button class="btn-add" onclick="executeCommand('add-container')">
+                    <button class="btn-add tooltip" onclick="executeCommand('add-container')">
                         <i class="fas fa-plus-circle"></i> Add
+                        <span class="tooltiptext">Add a new container</span>
                     </button>
-                    <button class="btn-list" onclick="executeCommand('containers-list')">
+                    <button class="btn-list tooltip" onclick="executeCommand('containers-list')">
                         <i class="fas fa-list"></i> List
+                        <span class="tooltiptext">List all containers</span>
                     </button>
                 </div>
             </div>
@@ -364,7 +578,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
         
         <div class="card output-container">
             <div class="card-header">
-                <h2>Command Output</h2>
+                <h2><i class="fas fa-desktop"></i>Command Output</h2>
+                <div class="actions-menu">
+                    <button title="Clear output" aria-label="Clear output" onclick="clearOutput()">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button title="Copy to clipboard" aria-label="Copy to clipboard" onclick="copyOutput()">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
             </div>
             
             <div class="loading" id="loading">
@@ -372,11 +594,19 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 <p>Executing command, please wait...</p>
             </div>
             
+            <div class="terminal-header">
+                <span>terminal@container-manager</span>
+                <div class="dots">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                </div>
+            </div>
             <div class="terminal" id="output">No command executed yet.</div>
         </div>
         
         <div class="status-bar">
-            <div>Manager CLI Web Interface</div>
+            <div>Manager CLI Web Interface <span class="badge badge-primary">Beta</span></div>
             <div>© 2025 Jackson Makl</div>
         </div>
     </div>
@@ -445,6 +675,26 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 loadingElement.style.display = 'none';
                 outputElement.textContent = `Error executing command: ${error.message}`;
             });
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').textContent = 'Output cleared.';
+        }
+        
+        function copyOutput() {
+            const output = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(output)
+                .then(() => {
+                    // Show a temporary success message
+                    const originalText = document.getElementById('output').textContent;
+                    document.getElementById('output').textContent = 'Output copied to clipboard!';
+                    setTimeout(() => {
+                        document.getElementById('output').textContent = originalText;
+                    }, 1500);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
         }
     </script>
 </body>
