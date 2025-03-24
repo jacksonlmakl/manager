@@ -1,8 +1,36 @@
 #!/bin/bash
-
 # Ensure script exits on failure
 set -e
 
+# Start the main containers
 docker compose up -d
+echo "Main containers started"
 
-echo "Container Started"
+# Get all running container IDs
+container_ids=$(docker ps -q)
+
+# Loop through each container
+for container_id in $container_ids; do
+  echo "Processing container: $container_id"
+  
+  # Check if docker is available inside the container
+  if docker exec $container_id which docker >/dev/null 2>&1; then
+    echo "Docker found in container $container_id, checking for inner containers..."
+    
+    # Check if any docker containers exist inside this container
+    inner_containers_exist=$(docker exec $container_id docker ps -a -q)
+    
+    if [ -n "$inner_containers_exist" ]; then
+      echo "Inner containers found, starting them..."
+      # Start all stopped containers if they exist
+      docker exec $container_id docker start $(docker exec $container_id docker ps -a -q) || true
+      echo "Inner containers started in $container_id"
+    else
+      echo "No inner containers found in $container_id"
+    fi
+  else
+    echo "Docker not available in container $container_id, skipping"
+  fi
+done
+
+echo "All containers and inner containers started"
