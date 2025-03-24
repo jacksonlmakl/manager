@@ -739,6 +739,9 @@ app.post('/api/execute', (req, res) => {
         case 'start-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
             break;
+        case 'deploy':
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash bin/deploy`;
+            break;
         case 'restart-containers':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
             break;
