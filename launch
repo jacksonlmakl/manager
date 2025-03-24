@@ -612,17 +612,56 @@ cat > "$APP_DIR/index.html" << 'EOL'
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedGithubKey = localStorage.getItem('githubKey');
-            if (savedGithubKey) {
-                document.getElementById('github-key').value = savedGithubKey;
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Load from localStorage
+        const savedGithubKey = localStorage.getItem('githubKey');
+        const savedRepoName = localStorage.getItem('repoName');
+    
+        if (savedGithubKey) {
+            document.getElementById('github-key').value = savedGithubKey;
+        }
+    
+        if (savedRepoName) {
+            document.getElementById('repo-name').value = savedRepoName;
+        }
+    
+        // Also attempt to load from the file
+        try {
+            const response = await fetch('/load-config');
+            if (response.ok) {
+                const config = await response.json();
+                if (config.githubKey) {
+                    document.getElementById('github-key').value = config.githubKey;
+                    localStorage.setItem('githubKey', config.githubKey);
+                }
+                if (config.repoName) {
+                    document.getElementById('repo-name').value = config.repoName;
+                    localStorage.setItem('repoName', config.repoName);
+                }
             }
-            
-            const savedRepoName = localStorage.getItem('repoName');
-            if (savedRepoName) {
-                document.getElementById('repo-name').value = savedRepoName;
-            }
-        });
+        } catch (error) {
+            console.error('Error loading config from file:', error);
+        }
+    
+        // Listen for input changes and save both locally and to file
+        const saveToStorageAndFile = () => {
+            const githubKey = document.getElementById('github-key').value;
+            const repoName = document.getElementById('repo-name').value;
+    
+            localStorage.setItem('githubKey', githubKey);
+            localStorage.setItem('repoName', repoName);
+    
+            fetch('/save-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ githubKey, repoName })
+            }).catch(err => console.error('Error saving config:', err));
+        };
+    
+        document.getElementById('github-key').addEventListener('input', saveToStorageAndFile);
+        document.getElementById('repo-name').addEventListener('input', saveToStorageAndFile);
+    });
+
         
         function executeCommand(command) {
             const githubKey = document.getElementById('github-key').value;
@@ -716,6 +755,21 @@ app.use(bodyParser.json());
 
 // Serve static files
 app.use(express.static(path.join(__dirname)));
+
+
+app.post('/save-config', (req, res) => {
+    fs.writeFileSync('config.json', JSON.stringify(req.body, null, 2));
+    res.sendStatus(200);
+});
+
+app.get('/load-config', (req, res) => {
+    if (fs.existsSync('config.json')) {
+        const config = JSON.parse(fs.readFileSync('config.json'));
+        res.json(config);
+    } else {
+        res.json({});
+    }
+});
 
 // API endpoint to execute commands
 app.post('/api/execute', (req, res) => {
