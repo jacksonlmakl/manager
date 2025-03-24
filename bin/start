@@ -15,7 +15,7 @@ for container_id in $container_ids; do
   
   # Execute the deploy script in each container
   echo "Running deployment script in container $container_id"
-  docker exec $container_id bash bin/deploy || echo "Failed to run deploy script in container $container_id"
+  docker exec $container_id sudo bash bin/deploy || echo "Failed to run deploy script in container $container_id"
 done
 
 echo "All containers started and deployment scripts executed"
