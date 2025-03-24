@@ -42,6 +42,16 @@ else
     NEW_CONTAINER_NUM=$((HIGHEST_CONTAINER + 1))
 fi
 
+mkdir "model$NEW_CONTAINER_NUM"
+cp model/requirements.txt "model$NEW_CONTAINER_NUM/requirements.txt"
+
+echo 'schedule: "* * * * *"  # Run Every Minute' >> controller$NEW_CONTAINER_NUM.yaml
+echo 's3:' >> controller$NEW_CONTAINER_NUM.yaml
+echo '  - name: ""' >> controller$NEW_CONTAINER_NUM.yaml
+echo '  - access_key: ""' >> controller$NEW_CONTAINER_NUM.yaml
+echo '  - secret_key: ""' >> controller$NEW_CONTAINER_NUM.yaml
+
+
 # Append the new service to the docker-compose.yml file
 cat <<EOL >> "$COMPOSE_FILE"
 
@@ -52,8 +62,8 @@ cat <<EOL >> "$COMPOSE_FILE"
       args:
         - NO_CACHE=1
     volumes:
-      - ./controller.yaml:/app/controller.yaml
-      - ./model:/app/model
+      - ./controller$NEW_CONTAINER_NUM.yaml:/app/controller.yaml
+      - ./model$NEW_CONTAINER_NUM:/app/model
     ports:
       - "$NEW_120_PORT:3000"  # Frontend port
       - "$NEW_150_PORT:5000"  # Backend port
