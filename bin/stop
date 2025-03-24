@@ -3,7 +3,7 @@
 # Ensure script exits on failure
 
 docker compose down 
-docker kill framework-app
-docker container prune -f
-docker container prune -f
+# docker kill framework-app
+# docker container prune -f
+# docker container prune -f
 echo "Container Shut Down"
