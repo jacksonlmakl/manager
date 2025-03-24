@@ -743,6 +743,7 @@ echo "[+] Saved web application HTML file"
 
 # Create the server.js file for the backend
 cat > "$APP_DIR/server.js" << 'EOL'
+const fs = require('fs');
 const express = require('express');
 const { exec } = require('child_process');
 const bodyParser = require('body-parser');
