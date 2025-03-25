@@ -18,19 +18,27 @@ for container_id in $container_ids; do
   mkdir -p ./logs
   # Set the log file path for this container
   log_file="./logs/${container_name}.job.log"
+  temp_log_file="./logs/${container_name}.temp.log"
   
-  # Execute the run script in each container and save output to local log file
+  # Execute the run script in each container and save output to temporary log file
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
-  if sudo docker container exec $container_id sudo bash bin/run > "$log_file" 2>&1; then
-    # Show the log content
+  if sudo docker container exec $container_id sudo bash bin/run > "$temp_log_file" 2>&1; then
+    # Filter out "requirement already satisfied" and similar messages
+    grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove" "$temp_log_file" > "$log_file"
+    
+    # Show the filtered log content
     cat "$log_file"
     # Run deploy script in background
     sudo docker container exec $container_id sudo bash bin/deploy >/dev/null 2>&1 &
     echo "--- Job Output End ---"
     echo "✅ Successfully ran execution script in container $container_id"
-    echo "✅ Logs saved to $log_file"
+    echo "✅ Filtered logs saved to $log_file"
+    # Remove temporary log file
+    rm "$temp_log_file"
   else
+    # On error, keep the full log content
+    mv "$temp_log_file" "$log_file"
     echo "--- Job Output End ---"
     echo "❌ Failed to run execution script in container $container_id"
     echo "❌ Check $log_file for details"
