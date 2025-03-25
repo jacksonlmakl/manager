@@ -1,58 +1,40 @@
 #!/bin/bash
 # Ensure script exits on failure
 set -e
-
 # Start the main containers
 echo "Starting main containers..."
 docker compose up -d
 echo "Main containers started"
-
 # Get all running container IDs
 container_ids=$(docker ps -q)
 echo "Found $(echo $container_ids | wc -w) running containers"
-
 # Loop through each container and execute the deploy script
 for container_id in $container_ids; do
   container_name=$(docker inspect --format='{{.Name}}' $container_id | sed 's/\///')
   echo "=========================="
   echo "Processing container: $container_id ($container_name)"
   
-  # Execute the deploy script in each container and capture output
+  # Create a directory for logs if it doesn't exist
+  mkdir -p ./logs
+  # Set the log file path for this container
+  log_file="./logs/${container_name}.job.log"
+  
+  # Execute the run script in each container and save output to local log file
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
-  if sudo docker container exec $container_id sudo bash bin/run; then
+  if sudo docker container exec $container_id sudo bash bin/run > "$log_file" 2>&1; then
+    # Show the log content
+    cat "$log_file"
+    # Run deploy script in background
     sudo docker container exec $container_id sudo bash bin/deploy >/dev/null 2>&1 &
     echo "--- Job Output End ---"
     echo "✅ Successfully ran execution script in container $container_id"
+    echo "✅ Logs saved to $log_file"
   else
     echo "--- Job Output End ---"
     echo "❌ Failed to run execution script in container $container_id"
+    echo "❌ Check $log_file for details"
   fi
   echo "=========================="
 done
-
 echo "All containers started and execution scripts executed"
-
-
-
-# #!/bin/bash
-# # Ensure script exits on failure
-# set -e
-
-# # Start the main containers
-# docker compose up -d
-# echo "Main containers started"
-
-# # Get all running container IDs
-# container_ids=$(docker ps -q)
-
-# # Loop through each container and execute the deploy script
-# for container_id in $container_ids; do
-#   echo "Processing container: $container_id"
-  
-#   # Execute the deploy script in each container
-#   echo "Running deployment script in container $container_id"
-#   sudo docker container exec $container_id sudo bash bin/run || echo "Failed to run deploy script in container $container_id"
-# done
-
-# echo "All containers started and deployment scripts executed"
