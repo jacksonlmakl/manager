@@ -295,7 +295,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         .btn-restart { 
             background-color: var(--warning); 
             background: linear-gradient(135deg, var(--warning), #D97706);
-            color: var(--dark);
         }
         .btn-add { 
             background-color: var(--primary-dark); 
@@ -561,7 +560,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <span class="tooltiptext">Start all containers</span>
                     </button>
                     <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
-                        <i class="fas fa-file"></i> Logs
+                        <i class="fas fa-file-alt"></i> Logs
                         <span class="tooltiptext">View Logs From Latest Launch</span>
                     </button>
                     <button class="btn-add tooltip" onclick="executeCommand('add-container')">
