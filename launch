@@ -560,9 +560,9 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <i class="fas fa-play-circle"></i> Start
                         <span class="tooltiptext">Start all containers</span>
                     </button>
-                    <button class="btn-restart tooltip" onclick="executeCommand('restart-containers')">
-                        <i class="fas fa-sync"></i> Restart
-                        <span class="tooltiptext">Restart all containers</span>
+                    <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
+                        <i class="fas fa-sync"></i> Logs
+                        <span class="tooltiptext">View Logs From Latest Launch</span>
                     </button>
                     <button class="btn-add tooltip" onclick="executeCommand('add-container')">
                         <i class="fas fa-plus-circle"></i> Add
@@ -780,8 +780,8 @@ const executeCommand = (command, githubKey, repoName) => {
         case 'deploy':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash bin/deploy`;
             break;
-        case 'restart-containers':
-            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/stop ${githubKey} ${repoName} && bash ~/manager/bin/start ${githubKey} ${repoName} `;
+        case 'get-logs':
+            cmdToExecute = `cd ~/ && cat launch.log `;
             break;
         case 'add-container':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
