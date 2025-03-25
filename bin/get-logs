@@ -1,0 +1,3 @@
+#!bin/bash
+
+cat launch.log
