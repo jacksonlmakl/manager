@@ -780,7 +780,7 @@ const executeCommand = (command, githubKey, repoName) => {
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash bin/deploy`;
             break;
         case 'get-logs':
-            cmdToExecute = `cd ~/ && cat launch.log `;
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName}/logs && cat *.log`;
             break;
         case 'add-container':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
