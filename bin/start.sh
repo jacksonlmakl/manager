@@ -21,6 +21,7 @@ for container_id in $container_ids; do
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
   if sudo docker container exec $container_id sudo bash bin/run; then
+    sudo docker container exec $container_id sudo bash bin/deploy &
     echo "--- Job Output End ---"
     echo "✅ Successfully ran execution script in container $container_id"
   else
