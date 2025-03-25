@@ -29,8 +29,7 @@ for container_id in $container_ids; do
     
     # Show the filtered log content
     cat "$log_file"
-    # Run deploy script in background
-    sudo docker container exec $container_id sudo bash bin/deploy >/dev/null 2>&1 &
+
     echo "--- Job Output End ---"
     echo "✅ Successfully ran execution script in container $container_id"
     echo "✅ Filtered logs saved to $log_file"
