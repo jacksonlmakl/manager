@@ -29,7 +29,7 @@ for container_id in $container_ids; do
   echo "--- Job Output Begin ---"
 
   # Extract schedule from controller.yaml inside container
-  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" /app/controller.yaml' 2>/dev/null)
+  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" /controller.yaml' 2>/dev/null)
 
   # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
   if [[ "$schedule" =~ ^([^\s]+\s){4}[^\s]+$ ]]; then
