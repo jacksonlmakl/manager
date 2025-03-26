@@ -28,7 +28,6 @@ for container_id in $container_ids; do
   echo "📂 Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
   #
-  # Try to copy controller.yaml from container
   if docker cp "$container_id":/app/controller.yaml ./tmp_controller.yaml; then
     echo "✅ Successfully copied controller.yaml from $container_id"
   else
@@ -36,8 +35,8 @@ for container_id in $container_ids; do
     continue
   fi
   
-  # Parse schedule using yq
-  schedule=$(yq -r '.schedule // ""' ./tmp_controller.yaml)
+  # Parse and clean schedule value
+  schedule=$(yq -r '.schedule // ""' ./tmp_controller.yaml | sed "s/^['\"]//;s/['\"]$//")
   rm -f ./tmp_controller.yaml
   
   echo "**DEBUG: Schedule for $container_name is: '$schedule'"
@@ -50,6 +49,7 @@ for container_id in $container_ids; do
     continue
   else
     echo "⚠️  No valid schedule found — running execution manually"
+
 
 
 
