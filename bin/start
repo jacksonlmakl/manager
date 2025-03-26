@@ -23,7 +23,18 @@ for container_id in $container_ids; do
   # Execute the run script in each container and save output to temporary log file
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
-  sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
+  
+  # Extract schedule from controller.yaml inside container
+  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" /app/controller.yaml' 2>/dev/null)
+  
+  # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
+  if [[ "$schedule" =~ ^([^\s]+\s){4}[^\s]+$ ]]; then
+    sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
+    echo "⏭️  Valid schedule found in controller.yaml inside container $container_id — skipping direct run. Containerizing & Deploying On Schedule...."
+    exit 1
+  else
+    echo "⚠️  No valid schedule found in controller.yaml — running execution manually."
+
   if sudo docker container exec $container_id sudo bash bin/run > "$temp_log_file" 2>&1; then
     # Filter out "requirement already satisfied" and similar messages
     grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|Installing\|Collecting" "$temp_log_file" > "$log_file"
