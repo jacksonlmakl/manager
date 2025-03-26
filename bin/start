@@ -1,7 +1,17 @@
 #!/bin/bash
-
 # Ensure script exits on failure
-# set -e
+set -e
+
+# Check if yq is installed
+if ! command -v yq &> /dev/null; then
+    echo "❌ Error: yq is not installed. Please install it first."
+    echo "   You can install it with: sudo apt-get install yq"
+    exit 1
+fi
+
+# Create tmp directory if it doesn't exist
+mkdir -p ./tmp
+mkdir -p ./logs
 
 # Start the main containers
 echo "🚀 Starting main containers..."
@@ -10,73 +20,61 @@ echo "✅ Main containers started"
 
 # Get all running container IDs
 container_ids=$(docker ps -q)
-echo "📦 Found $(echo "$container_ids" | wc -w) running containers"
+echo "📦 Found $(echo "$container_ids" | wc -l) running containers"
 
 # Loop through each container and execute the deploy script
 for container_id in $container_ids; do
-  container_name=$(docker inspect --format='{{.Name}}' "$container_id" | sed 's/\///')
+  container_name=$(docker inspect --format='{{.Name}}' "$container_id" | sed 's/^\///')
   echo "=========================="
   echo "🔧 Processing container: $container_id ($container_name)"
   
-  # Create a directory for logs if it doesn't exist
-  mkdir -p ./logs
-
   # Set the log file path for this container
   log_file="./logs/${container_name}.job.log"
   temp_log_file="./logs/${container_name}.temp.log"
   
   echo "📂 Running execution script in container $container_id"
-  echo "--- Job Output Begin ---"
-  #
+  
   # Try to copy controller.yaml from container
-  if docker cp "$container_id":/app/controller.yaml ./tmp_controller.yaml; then
+  if docker cp "$container_id:/app/controller.yaml" "./tmp/tmp_controller.yaml" 2>/dev/null; then
     echo "✅ Successfully copied controller.yaml from $container_id"
-  else
-    echo "❌ Failed to copy controller.yaml from $container_id — skipping"
-    continue
-  fi
-  
-  # Parse schedule using yq
-  schedule=$(yq -r '.schedule // ""' ./tmp_controller.yaml)
-  rm -f ./tmp_controller.yaml
-  
-  echo "**DEBUG: Schedule for $container_name is: '$schedule'"
-  
-  # Cron regex validation (5 space-separated fields)
-  cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
-  if [[ "$schedule" =~ $cron_regex ]]; then
-    echo "⏭️  Valid schedule found — skipping direct run"
-    docker exec "$container_id" bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
-    continue
-  else
-    echo "⚠️  No valid schedule found — running execution manually"
-
-
-
-
-    if sudo docker container exec "$container_id" sudo bash bin/run > "$temp_log_file" 2>&1; then
-      # Filter out unimportant logs
-      grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|Installing\|Collecting" "$temp_log_file" > "$log_file"
-      
-      # Show the filtered log content
-      cat "$log_file"
-
-      echo "--- Job Output End ---"
-      echo "✅ Successfully ran execution script in container $container_id"
-      echo "✅ Filtered logs saved to $log_file"
-
-      # Remove temporary log file
-      rm "$temp_log_file"
-    else
-      # On error, keep the full log content
-      mv "$temp_log_file" "$log_file"
-      echo "--- Job Output End ---"
-      echo "❌ Failed to run execution script in container $container_id"
-      echo "❌ Check $log_file for details"
+    
+    # Parse schedule using yq
+    schedule=$(yq -r '.schedule // ""' "./tmp/tmp_controller.yaml")
+    rm -f "./tmp/tmp_controller.yaml"
+    
+    echo "**DEBUG: Schedule for $container_name is: '$schedule'"
+    
+    # Cron regex validation (5 space-separated fields)
+    cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
+    if [[ "$schedule" =~ $cron_regex ]]; then
+      echo "⏭️  Valid schedule found — skipping direct run"
+      docker exec "$container_id" bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
+      continue
     fi
+  else
+    echo "⚠️  No controller.yaml found or unable to copy — proceeding with manual execution"
   fi
-
+  
+  echo "--- Job Output Begin ---"
+  # Run the execution script
+  if docker exec "$container_id" bash bin/run > "$temp_log_file" 2>&1; then
+    # Filter out unimportant logs
+    grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|Installing\|Collecting" "$temp_log_file" > "$log_file" || true
+    
+    # Show the filtered log content
+    cat "$log_file"
+    echo "--- Job Output End ---"
+    echo "✅ Successfully ran execution script in container $container_id"
+    echo "✅ Filtered logs saved to $log_file"
+    # Remove temporary log file
+    rm -f "$temp_log_file"
+  else
+    # On error, keep the full log content
+    mv "$temp_log_file" "$log_file"
+    echo "--- Job Output End ---"
+    echo "❌ Failed to run execution script in container $container_id"
+    echo "❌ Check $log_file for details"
+  fi
   echo "=========================="
 done
-
 echo "🎉 All containers processed and execution scripts completed"
