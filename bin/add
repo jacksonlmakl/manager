@@ -44,7 +44,7 @@ fi
 
 mkdir -p "model$NEW_CONTAINER_NUM"
 cp model/requirements.txt "model$NEW_CONTAINER_NUM/requirements.txt"
-echo 'schedule: "* * "*  # Run Every Minute' > controller$NEW_CONTAINER_NUM.yaml
+echo 'schedule: ""' > controller$NEW_CONTAINER_NUM.yaml
 echo 's3:' >> controller$NEW_CONTAINER_NUM.yaml
 echo '  - name: ""' >> controller$NEW_CONTAINER_NUM.yaml
 echo '  - access_key: ""' >> controller$NEW_CONTAINER_NUM.yaml
