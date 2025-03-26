@@ -28,9 +28,10 @@ for container_id in $container_ids; do
   echo "📂 Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
 
-  # Extract schedule from controller.yaml inside container
-  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" controller.yaml' 2>/dev/null)
-  echo "**DEBUG " $schedule
+  # Extract schedule from controller.yaml inside container and strip quotes
+  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" controller.yaml' 2>/dev/null | sed "s/^['\"]//;s/['\"]$//")
+  echo "**DEBUG: Schedule for $container_name is '$schedule'"
+  
   # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
   if [[ $(wc -w <<< "$schedule") -eq 5 ]]; then
     sudo docker container exec "$container_id" sudo bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
