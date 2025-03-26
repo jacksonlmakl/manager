@@ -1028,10 +1028,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <i class="fas fa-play-circle"></i> Start All
                         <span class="tooltiptext">Start all containers</span>
                     </button>
-                    <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
-                        <i class="fas fa-file-alt"></i> View Logs
-                        <span class="tooltiptext">View Logs From Latest Launch</span>
-                    </button>
+
                     <button class="btn-add tooltip" onclick="showAddContainerModal()">
                         <i class="fas fa-plus-circle"></i> Add New
                         <span class="tooltiptext">Add a new container</span>
