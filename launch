@@ -236,7 +236,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
 
         .actions {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -481,19 +481,14 @@ cat > "$APP_DIR/index.html" << 'EOL'
             color: var(--text);
             font-weight: 600;
             text-align: left;
-            padding: 14px 16px;
+            padding: 12px 16px;
             font-size: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .container-list td {
-            padding: 14px 16px;
+            padding: 12px 16px;
             border-top: 1px solid var(--border);
             font-size: 14px;
-            vertical-align: middle;
         }
 
         .container-list tr:hover {
@@ -501,148 +496,21 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         .container-list .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
+            display: inline-block;
+            padding: 4px 8px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            width: fit-content;
+            font-weight: 500;
         }
 
         .status-running {
             background-color: rgba(16, 185, 129, 0.1);
             color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .status-stopped {
             background-color: rgba(239, 68, 68, 0.1);
             color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .container-badge {
-            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-            background-color: var(--bg);
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .container-url {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 13px;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .container-url:hover {
-            background-color: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .container-url i {
-            font-size: 14px;
-        }
-
-        .container-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .container-actions button {
-            height: 34px;
-            padding: 0 12px;
-            font-size: 12px;
-        }
-
-        .container-name {
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .empty-state {
-            padding: 40px 20px;
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: var(--text);
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .container-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .container-list-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .container-list-actions button {
-            height: 36px;
-            font-size: 13px;
-            background: white;
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .search-container {
-            position: relative;
-            max-width: 300px;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 10px 16px 10px 40px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            font-size: 14px;
-        }
-
-        .search-container i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
         }
 
         /* Log Viewer */
@@ -668,7 +536,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
         }
 
         .modal-content {
@@ -736,7 +603,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             transform: translateX(120%);
             transition: transform 0.3s ease;
             border-left: 4px solid var(--primary);
-            min-width: 300px;
         }
 
         .toast.show {
@@ -777,12 +643,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             display: flex;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
-            overflow-x: auto;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .tabs::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
         }
 
         .tab {
@@ -791,7 +651,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: var(--transition);
-            white-space: nowrap;
         }
 
         .tab.active {
@@ -805,75 +664,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
 
         .tab-content.active {
             display: block;
-        }
-        
-        /* Welcome Card */
-        .welcome-card {
-            text-align: center;
-            padding: 40px 24px;
-        }
-        
-        .welcome-card h2 {
-            margin-bottom: 16px;
-            font-size: 24px;
-        }
-        
-        .welcome-card p {
-            margin-bottom: 24px;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .getting-started {
-            background-color: var(--primary-light);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: left;
-            margin-top: 24px;
-        }
-        
-        .getting-started h3 {
-            color: var(--primary-dark);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .step {
-            display: flex;
-            margin-bottom: 16px;
-        }
-        
-        .step-number {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        
-        .step-content {
-            flex: 1;
-        }
-        
-        .step-content h4 {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .step-content p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin: 0;
         }
 
         @media (max-width: 768px) {
@@ -898,11 +688,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 flex-direction: column;
                 align-items: stretch;
             }
-            
-            .container-list th:nth-child(1),
-            .container-list td:nth-child(1) {
-                display: none;
-            }
         }
     </style>
 </head>
@@ -913,51 +698,17 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 <i class="fas fa-cubes"></i>
             </div>
             <h1>Container Manager</h1>
-            <span class="version">v2.3.0</span>
-        </div>
-        
-        <!-- Welcome/Onboarding Card (shown only when no credentials are saved) -->
-        <div class="card welcome-card" id="welcome-card" style="display: none;">
-            <h2>Welcome to Container Manager</h2>
-            <p>The easiest way to manage your container deployments. Start by setting up your GitHub credentials below to connect to your repositories.</p>
-            
-            <div class="getting-started">
-                <h3><i class="fas fa-rocket"></i> Getting Started</h3>
-                
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>Enter Your GitHub Token</h4>
-                        <p>Add your personal access token to connect with your GitHub repositories</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>Specify Repository Name</h4>
-                        <p>Enter the name of the repository you want to manage</p>
-                    </div>
-                </div>
-                
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>Manage Your Containers</h4>
-                        <p>Use the operations panel to start, stop, and monitor your containers</p>
-                    </div>
-                </div>
-            </div>
+            <span class="version">v2.2.0</span>
         </div>
         
         <div class="card">
             <div class="card-header">
                 <h2><i class="fas fa-cog"></i>Configuration</h2>
                 <div class="actions-menu">
-                    <button title="Import settings" aria-label="Import settings" id="import-settings-btn">
+                    <button title="Import settings" aria-label="Import settings">
                         <i class="fas fa-file-import"></i>
                     </button>
-                    <button title="Export settings" aria-label="Export settings" id="export-settings-btn">
+                    <button title="Export settings" aria-label="Export settings">
                         <i class="fas fa-file-export"></i>
                     </button>
                 </div>
@@ -1021,24 +772,24 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 </div>
                 <div class="actions" id="container-actions">
                     <button class="btn-stop tooltip" onclick="executeCommand('stop-containers')">
-                        <i class="fas fa-stop-circle"></i> Stop All
+                        <i class="fas fa-stop-circle"></i> Stop
                         <span class="tooltiptext">Stop all running containers</span>
                     </button>
                     <button class="btn-start tooltip" onclick="executeCommand('start-containers')">
-                        <i class="fas fa-play-circle"></i> Start All
+                        <i class="fas fa-play-circle"></i> Start
                         <span class="tooltiptext">Start all containers</span>
                     </button>
                     <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
-                        <i class="fas fa-file-alt"></i> View Logs
+                        <i class="fas fa-file-alt"></i> Logs
                         <span class="tooltiptext">View Logs From Latest Launch</span>
                     </button>
-                    <button class="btn-add tooltip" onclick="showAddContainerModal()">
-                        <i class="fas fa-plus-circle"></i> Add New
+                    <button class="btn-add tooltip" onclick="executeCommand('add-container')">
+                        <i class="fas fa-plus-circle"></i> Add
                         <span class="tooltiptext">Add a new container</span>
                     </button>
                     <button class="btn-list tooltip" onclick="refreshContainerList()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                        <span class="tooltiptext">Refresh the container list</span>
+                        <i class="fas fa-list"></i> List
+                        <span class="tooltiptext">List all containers</span>
                     </button>
                 </div>
             </div>
@@ -1047,38 +798,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
         <!-- Active Containers Display -->
         <div class="card" id="active-containers-card" style="display: none;">
             <div class="card-header">
-                <h2><i class="fas fa-server"></i>Containers</h2>
+                <h2><i class="fas fa-signal"></i>Active Containers</h2>
                 <div class="actions-menu">
                     <button title="Refresh container list" aria-label="Refresh container list" onclick="refreshContainerList()">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
             </div>
-            
-            <div class="container-list-header">
-                <div class="search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="container-search" placeholder="Search containers..." onkeyup="searchContainers()">
-                </div>
-                <div class="container-list-actions">
-                    <button onclick="filterContainers('all')">
-                        <i class="fas fa-list"></i> All
-                    </button>
-                    <button onclick="filterContainers('running')">
-                        <i class="fas fa-play-circle"></i> Running
-                    </button>
-                    <button onclick="filterContainers('stopped')">
-                        <i class="fas fa-stop-circle"></i> Stopped
-                    </button>
-                </div>
-            </div>
-            
             <div id="container-list-container">
-                <div class="empty-state">
-                    <i class="fas fa-cubes"></i>
-                    <h3>No containers found</h3>
-                    <p>Click the "Refresh" button to view your containers or add a new container to get started.</p>
-                </div>
+                <p>No containers found. Click "List" to refresh.</p>
             </div>
         </div>
         
@@ -1099,7 +827,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
             <div class="tabs">
                 <div class="tab active" data-tab="terminal">Terminal Output</div>
                 <div class="tab" data-tab="logs">Log Viewer</div>
-                <div class="tab" data-tab="help">Help & Documentation</div>
             </div>
             
             <div class="tab-content active" data-tab-content="terminal">
@@ -1116,7 +843,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <div class="dot dot-green"></div>
                     </div>
                 </div>
-                <div class="terminal" id="output">Welcome to Container Manager! Use the buttons above to manage your containers.</div>
+                <div class="terminal" id="output">No command executed yet.</div>
             </div>
             
             <div class="tab-content" data-tab-content="logs">
@@ -1144,44 +871,10 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 </div>
                 <div class="terminal" id="log-content">Select a log file to view its contents.</div>
             </div>
-            
-            <div class="tab-content" data-tab-content="help">
-                <div class="getting-started">
-                    <h3><i class="fas fa-question-circle"></i> Quick Help</h3>
-                    
-                    <div class="step">
-                        <div class="step-content">
-                            <h4>Configuration</h4>
-                            <p>Add your GitHub token and repository name to start managing containers.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-content">
-                            <h4>Git Operations</h4>
-                            <p>Initialize new repositories, push changes, or pull updates from GitHub.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-content">
-                            <h4>Container Management</h4>
-                            <p>Start, stop, and monitor your containers. View logs for debugging.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-content">
-                            <h4>Need More Help?</h4>
-                            <p>Check the documentation or contact support for assistance.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         
         <div class="status-bar">
-            <div>Manager CLI Web Interface <span class="badge badge-primary">v2.3.0</span></div>
+            <div>Manager CLI Web Interface <span class="badge badge-primary">v2.2.0</span></div>
             <div>© 2025 Jackson Makl</div>
         </div>
     </div>
@@ -1203,30 +896,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         </div>
     </div>
     
-    <!-- Add Container Modal -->
-    <div id="add-container-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add New Container</h3>
-                <span class="modal-close" onclick="closeModal('add-container-modal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="container-name">Container Display Name</label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-tag"></i>
-                        <input type="text" id="container-name" placeholder="Enter a name for this container">
-                    </div>
-                    <div class="input-help">This name will be used for display in the UI. Backend will still use framework-app naming.</div>
-                </div>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
-                <button onclick="closeModal('add-container-modal')" style="background-color: var(--secondary);">Cancel</button>
-                <button onclick="addContainerWithName()" style="background-color: var(--primary);">Add Container</button>
-            </div>
-        </div>
-    </div>
-    
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
@@ -1235,11 +904,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         // Load from localStorage
         const savedGithubKey = localStorage.getItem('githubKey');
         const savedRepoName = localStorage.getItem('repoName');
-        
-        // Show welcome card if no credentials are saved
-        if (!savedGithubKey || !savedRepoName) {
-            document.getElementById('welcome-card').style.display = 'block';
-        }
     
         if (savedGithubKey) {
             document.getElementById('github-key').value = savedGithubKey;
@@ -1262,11 +926,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
                     document.getElementById('repo-name').value = config.repoName;
                     localStorage.setItem('repoName', config.repoName);
                 }
-                
-                // Hide welcome card if credentials were loaded
-                if (config.githubKey && config.repoName) {
-                    document.getElementById('welcome-card').style.display = 'none';
-                }
             }
         } catch (error) {
             console.error('Error loading config from file:', error);
@@ -1276,13 +935,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         const saveToStorageAndFile = () => {
             const githubKey = document.getElementById('github-key').value;
             const repoName = document.getElementById('repo-name').value;
-            
-            // Hide welcome card if both fields are filled
-            if (githubKey && repoName) {
-                document.getElementById('welcome-card').style.display = 'none';
-            } else {
-                document.getElementById('welcome-card').style.display = 'block';
-            }
     
             localStorage.setItem('githubKey', githubKey);
             localStorage.setItem('repoName', repoName);
@@ -1320,95 +972,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         if (savedGithubKey && savedRepoName) {
             setTimeout(() => refreshContainerList(), 1000);
         }
-        
-        // Add keyboard shortcut for adding container (Alt+A)
-        document.addEventListener('keydown', function(e) {
-            if (e.altKey && e.key === 'a') {
-                showAddContainerModal();
-            }
-            // Refresh containers (Alt+R)
-            if (e.altKey && e.key === 'r') {
-                refreshContainerList();
-            }
-        });
-        
-        // Export settings
-        document.getElementById('export-settings-btn').addEventListener('click', function() {
-            const settings = {
-                githubKey: document.getElementById('github-key').value,
-                repoName: document.getElementById('repo-name').value
-            };
-            
-            // Create blob from settings
-            const blob = new Blob([JSON.stringify(settings, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            
-            // Create temporary link and trigger download
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'container-manager-settings.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast('Settings exported successfully', 'success');
-        });
-        
-        // Import settings
-        document.getElementById('import-settings-btn').addEventListener('click', function() {
-            // Create file input element
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(event) {
-                    try {
-                        const settings = JSON.parse(event.target.result);
-                        
-                        if (settings.githubKey) {
-                            document.getElementById('github-key').value = settings.githubKey;
-                            localStorage.setItem('githubKey', settings.githubKey);
-                        }
-                        
-                        if (settings.repoName) {
-                            document.getElementById('repo-name').value = settings.repoName;
-                            localStorage.setItem('repoName', settings.repoName);
-                        }
-                        
-                        // Save to file
-                        fetch('/save-config', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                githubKey: settings.githubKey || '',
-                                repoName: settings.repoName || ''
-                            })
-                        }).catch(err => console.error('Error saving config:', err));
-                        
-                        showToast('Settings imported successfully', 'success');
-                        
-                        // Hide welcome card if both fields are filled
-                        if (settings.githubKey && settings.repoName) {
-                            document.getElementById('welcome-card').style.display = 'none';
-                            // Refresh container list with new settings
-                            setTimeout(() => refreshContainerList(), 1000);
-                        }
-                    } catch (error) {
-                        console.error('Error parsing settings file:', error);
-                        showToast('Error importing settings', 'error');
-                    }
-                };
-                
-                reader.readAsText(file);
-            };
-            
-            input.click();
-        });
     });
 
     // Function to show a confirmable action
@@ -1464,48 +1027,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }, 5000);
     }
         
-    // Show the Add Container modal
-    function showAddContainerModal() {
-        const githubKey = document.getElementById('github-key').value;
-        const repoName = document.getElementById('repo-name').value;
-        
-        // Validate credentials first
-        if (!githubKey || !repoName) {
-            showToast("Please enter GitHub Token and Repository Name first", "warning");
-            return;
-        }
-        
-        document.getElementById('container-name').value = '';
-        document.getElementById('add-container-modal').style.display = 'block';
-        
-        // Focus on the input field
-        setTimeout(() => {
-            document.getElementById('container-name').focus();
-        }, 100);
-        
-        // Add enter key event listener
-        const input = document.getElementById('container-name');
-        input.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                addContainerWithName();
-            }
-        });
-    }
-    
-    // Add a container with custom name
-    function addContainerWithName() {
-        const containerName = document.getElementById('container-name').value.trim();
-        if (!containerName) {
-            showToast("Please enter a container name", "warning");
-            return;
-        }
-        
-        closeModal('add-container-modal');
-        executeCommand('add-container', containerName);
-    }
-    
     // Function to execute a command
-    function executeCommand(command, containerName = null) {
+    function executeCommand(command) {
         const githubKey = document.getElementById('github-key').value;
         const repoName = document.getElementById('repo-name').value;
         const outputElement = document.getElementById('output');
@@ -1523,15 +1046,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
         // Handle potentially destructive actions with confirmation
         if (command === 'stop-containers') {
             confirmAction("Are you sure you want to stop all containers?", () => {
-                executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName);
+                executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
             });
             return;
         }
         
-        executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName);
+        executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
     }
     
-    function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName = null) {
+    function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo) {
         const outputElement = document.getElementById('output');
         const loadingElement = document.getElementById('loading');
         
@@ -1550,22 +1073,10 @@ cat > "$APP_DIR/index.html" << 'EOL'
         
         // Show loading indicator
         loadingElement.style.display = 'block';
-        outputElement.textContent = `Executing ${command.replace(/-/g, ' ')}...`;
+        outputElement.textContent = `Executing ${command}...`;
         
         // Switch to terminal tab if not already active
         activateTab('terminal');
-        
-        // Prepare request body
-        const requestBody = {
-            command: command,
-            githubKey: githubKey,
-            repoName: repoName
-        };
-        
-        // Add container name if provided
-        if (containerName) {
-            requestBody.containerName = containerName;
-        }
         
         // Make a fetch request to the backend to execute the command
         fetch('/api/execute', {
@@ -1573,7 +1084,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                command: command,
+                githubKey: githubKey,
+                repoName: repoName
+            })
         })
         .then(response => response.json())
         .then(data => {
@@ -1594,13 +1109,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 // If this was a log command, also update the log selector
                 if (command === 'get-logs') {
                     refreshLogList();
-                    // Switch to logs tab
-                    activateTab('logs');
-                }
-                
-                // If this was an add-container command, refresh container list
-                if (command === 'add-container') {
-                    setTimeout(() => refreshContainerList(), 1000);
                 }
             } else {
                 outputElement.textContent = "Command executed but no output was returned.";
@@ -1609,26 +1117,12 @@ cat > "$APP_DIR/index.html" << 'EOL'
         .catch(error => {
             loadingElement.style.display = 'none';
             outputElement.textContent = `Error executing command: ${error.message}`;
-            showToast(`Error executing ${command.replace(/-/g, ' ')}`, "error");
+            showToast(`Error executing ${command}`, "error");
         });
     }
     
     // Function to refresh container list
     function refreshContainerList() {
-        const githubKey = document.getElementById('github-key').value;
-        const repoName = document.getElementById('repo-name').value;
-        
-        if (!githubKey || !repoName) {
-            showToast("GitHub Token and Repository Name are required", "warning");
-            return;
-        }
-        
-        // Show the containers card
-        document.getElementById('active-containers-card').style.display = 'block';
-        
-        // Clear container search field
-        document.getElementById('container-search').value = '';
-        
         executeCommand('containers-list');
     }
     
@@ -1643,189 +1137,55 @@ cat > "$APP_DIR/index.html" << 'EOL'
         if (containers.length > 0) {
             containersCard.style.display = 'block';
             
-            // Fetch custom container names if available
-            fetch('/api/container-names', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    repoName: document.getElementById('repo-name').value
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const nameMappings = data.mappings || {};
-                
-                // Create table for containers
-                let tableHTML = `
-                    <div class="container-list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Container ID</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                containers.forEach(container => {
-                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
-                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
-                    
-                    // Use custom name if available
-                    const displayName = nameMappings[container.id] || container.name;
-                    
-                    tableHTML += `
-                        <tr data-status="${statusText.toLowerCase()}" class="container-row">
-                            <td><span class="container-badge" title="${container.id}">${container.id.substring(0, 12)}</span></td>
-                            <td>
-                                <div class="container-name">${displayName}</div>
-                                ${container.url ? 
-                                    `<a href="${container.url}" class="container-url" target="_blank">
-                                        <i class="fas fa-external-link-alt"></i> Open URL
-                                    </a>` : 
-                                    '<span class="text-secondary">No URL available</span>'}
-                            </td>
-                            <td><span class="status-badge ${statusClass}">
-                                <i class="fas fa-${statusText === 'Running' ? 'play-circle' : 'stop-circle'}"></i> 
-                                ${statusText}
-                            </span></td>
-                            <td>
-                                <div class="container-actions">
-                                    <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
-                                            onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
-                                        <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
-                                        ${statusText === 'Running' ? 'Stop' : 'Start'}
-                                    </button>
-                                    <button class="btn-restart" onclick="executeCommand('get-logs')">
-                                        <i class="fas fa-file-alt"></i>
-                                        Logs
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
+            // Create table for containers
+            let tableHTML = `
+                <div class="container-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Container ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>URL</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            containers.forEach(container => {
+                const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
+                const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
                 
                 tableHTML += `
-                            </tbody>
-                        </table>
-                    </div>
+                    <tr>
+                        <td>${container.id}</td>
+                        <td>${container.name}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
+                        <td>
+                            <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
+                                    style="height: 32px; padding: 4px 8px;" 
+                                    onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
+                                <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
+                                ${statusText === 'Running' ? 'Stop' : 'Start'}
+                            </button>
+                        </td>
+                    </tr>
                 `;
-                
-                containerListContainer.innerHTML = tableHTML;
-            })
-            .catch(error => {
-                console.error('Error fetching container names:', error);
-                
-                // Fallback to regular display without custom names
-                let tableHTML = `
-                    <div class="container-list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Container ID</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                containers.forEach(container => {
-                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
-                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
-                    
-                    tableHTML += `
-                        <tr data-status="${statusText.toLowerCase()}" class="container-row">
-                            <td><span class="container-badge" title="${container.id}">${container.id.substring(0, 12)}</span></td>
-                            <td>
-                                <div class="container-name">${container.name}</div>
-                                ${container.url ? 
-                                    `<a href="${container.url}" class="container-url" target="_blank">
-                                        <i class="fas fa-external-link-alt"></i> Open URL
-                                    </a>` : 
-                                    '<span class="text-secondary">No URL available</span>'}
-                            </td>
-                            <td><span class="status-badge ${statusClass}">
-                                <i class="fas fa-${statusText === 'Running' ? 'play-circle' : 'stop-circle'}"></i> 
-                                ${statusText}
-                            </span></td>
-                            <td>
-                                <div class="container-actions">
-                                    <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
-                                            onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
-                                        <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
-                                        ${statusText === 'Running' ? 'Stop' : 'Start'}
-                                    </button>
-                                    <button class="btn-restart" onclick="executeCommand('get-logs')">
-                                        <i class="fas fa-file-alt"></i>
-                                        Logs
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                tableHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                
-                containerListContainer.innerHTML = tableHTML;
             });
-        } else {
-            containerListContainer.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-cubes"></i>
-                    <h3>No containers found</h3>
-                    <p>Click the "Add New" button to create your first container.</p>
+            
+            tableHTML += `
+                        </tbody>
+                    </table>
                 </div>
             `;
-        }
-    }
-    
-    // Function to filter containers by status
-    function filterContainers(status) {
-        const rows = document.querySelectorAll('.container-row');
-        
-        if (status === 'all') {
-            rows.forEach(row => {
-                row.style.display = '';
-            });
-        } else {
-            rows.forEach(row => {
-                if (row.dataset.status === status) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-    }
-    
-    // Function to search containers
-    function searchContainers() {
-        const searchText = document.getElementById('container-search').value.toLowerCase();
-        const rows = document.querySelectorAll('.container-row');
-        
-        rows.forEach(row => {
-            const name = row.querySelector('.container-name').textContent.toLowerCase();
-            const id = row.querySelector('.container-badge').textContent.toLowerCase();
             
-            if (name.includes(searchText) || id.includes(searchText)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+            containerListContainer.innerHTML = tableHTML;
+        } else {
+            containerListContainer.innerHTML = "<p>No containers found.</p>";
+            containersCard.style.display = 'none';
+        }
     }
     
     // Parse container output to extract information
@@ -1907,10 +1267,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
                     option.textContent = log;
                     selector.appendChild(option);
                 });
-                
-                // Automatically select the first log file
-                selector.selectedIndex = 1;
-                loadSelectedLog();
             } else {
                 const option = document.createElement('option');
                 option.value = "";
@@ -1985,7 +1341,12 @@ cat > "$APP_DIR/index.html" << 'EOL'
         
         navigator.clipboard.writeText(output)
             .then(() => {
-                showToast("Content copied to clipboard", "success");
+                const originalText = document.getElementById(elementId).textContent;
+                document.getElementById(elementId).textContent = 'Content copied to clipboard!';
+                setTimeout(() => {
+                    document.getElementById(elementId).textContent = originalText;
+                }, 1500);
+                showToast("Copied to clipboard", "success");
             })
             .catch(err => {
                 console.error('Failed to copy: ', err);
@@ -2020,7 +1381,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
 // Helper function to execute commands
-const executeCommand = (command, githubKey, repoName, req = {}) => {
+const executeCommand = (command, githubKey, repoName) => {
     let cmdToExecute = '';
     
     switch(command) {
@@ -2046,8 +1407,7 @@ const executeCommand = (command, githubKey, repoName, req = {}) => {
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName}/logs && cat *.log`;
             break;
         case 'add-container':
-            const containerName = req.body.containerName || '';
-            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} "${containerName}"`;
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
             break;
         case 'containers-list':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && sudo bash ~/manager/bin/containers-list `;
@@ -2085,56 +1445,13 @@ app.get('/load-config', (req, res) => {
 
 // API endpoint to execute commands
 app.post('/api/execute', async (req, res) => {
-    const { command, githubKey, repoName, containerName } = req.body;
+    const { command, githubKey, repoName } = req.body;
     
     try {
-        // Include containerName in the request parameters
-        req.body.containerName = containerName;
-        const output = await executeCommand(command, githubKey, repoName, req);
-        
-        // Store the container name mapping if this is an add-container command
-        if (command === 'add-container' && containerName) {
-            try {
-                const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
-                let mappings = {};
-                
-                // Load existing mappings if available
-                if (fs.existsSync(mappingsPath)) {
-                    mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
-                }
-                
-                // Extract container ID from output if possible
-                const match = output.match(/Container ID: ([a-zA-Z0-9]+)/);
-                if (match && match[1]) {
-                    mappings[match[1]] = containerName;
-                    fs.writeFileSync(mappingsPath, JSON.stringify(mappings, null, 2));
-                }
-            } catch (err) {
-                console.error('Error saving container name mapping:', err);
-            }
-        }
-        
+        const output = await executeCommand(command, githubKey, repoName);
         res.json({ output });
     } catch (error) {
         res.status(500).json({ output: error });
-    }
-});
-
-// API endpoint to get custom container names
-app.post('/api/container-names', (req, res) => {
-    const { repoName } = req.body;
-    const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
-    
-    try {
-        if (fs.existsSync(mappingsPath)) {
-            const mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
-            res.json({ mappings });
-        } else {
-            res.json({ mappings: {} });
-        }
-    } catch (error) {
-        console.error('Error reading container name mappings:', error);
-        res.status(500).json({ error: 'Error reading container name mappings' });
     }
 });
 
@@ -2186,20 +1503,9 @@ app.get('/', (req, res) => {
 });
 
 // Format container output into a more structured format
-function formatContainerOutput(stdout, repoName) {
+function formatContainerOutput(stdout) {
     const lines = stdout.trim().split('\n');
     if (lines.length <= 1) return stdout;  // No containers or just header
-    
-    // Try to load container name mappings
-    let nameMappings = {};
-    try {
-        const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
-        if (fs.existsSync(mappingsPath)) {
-            nameMappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
-        }
-    } catch (err) {
-        console.error('Error loading container name mappings:', err);
-    }
     
     let formattedOutput = "CONTAINER ID | NAME | STATUS | PORTS\n";
     formattedOutput += "-------------------------------------------\n";
@@ -2207,10 +1513,7 @@ function formatContainerOutput(stdout, repoName) {
     for (let i = 1; i < lines.length; i++) {
         const parts = lines[i].trim().split(/\s{2,}/);
         if (parts.length >= 4) {
-            // Use custom name if available, otherwise use original
-            const containerId = parts[0];
-            const displayName = nameMappings[containerId] || parts[1];
-            formattedOutput += `${containerId} | ${displayName} | ${parts[2]} | ${parts[3]}\n`;
+            formattedOutput += `${parts[0]} | ${parts[1]} | ${parts[2]} | ${parts[3]}\n`;
         }
     }
     
@@ -2251,7 +1554,7 @@ const autoStartContainers = async () => {
 app.listen(port, () => {
     console.log(`Enhanced Manager CLI Web Interface running at http://localhost:${port}`);
     // Run auto-start after server is up
-    setTimeout(autoStartContainers, 2000);
+    autoStartContainers();
 });
 EOL
 echo "[+] Created enhanced server.js backend file"
@@ -2260,7 +1563,7 @@ echo "[+] Created enhanced server.js backend file"
 cat > "$APP_DIR/package.json" << 'EOL'
 {
   "name": "manager-cli-web-interface",
-  "version": "2.3.0",
+  "version": "2.2.0",
   "description": "Enhanced web interface for Manager CLI operations",
   "main": "server.js",
   "scripts": {
@@ -2292,7 +1595,6 @@ fi
 # Start the application
 echo "==============================================="
 echo "[+] Starting Enhanced Manager CLI Web Interface"
-echo "[+] Access the interface at: http://localhost:1100"
 echo "[+] Press Ctrl+C to stop the server"
 echo "==============================================="
 cd "$APP_DIR" && node server.js
