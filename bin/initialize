@@ -26,67 +26,21 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
     -d "{\"name\": \"$NEW_REPO_NAME\", \"private\": false}" \
     https://api.github.com/user/repos
 
+# Clone the existing repository
+echo "Cloning 'deploy' repository..."
+git clone https://github.com/jacksonlmakl/deploy.git "$NEW_REPO_NAME"
+
 # Change to the new directory
-mkdir -p "$NEW_REPO_NAME"
 cd "$NEW_REPO_NAME"
 
-# Create a fresh git repository with only the specified files
-echo "Creating a fresh repository with only the required files..."
-rm -rf .git
-
-# Initialize a new git repository
-git init
-
-# Add files individually to better handle errors
-echo "Attempting to add required files..."
-
-# For model* pattern
-if ls model* 1> /dev/null 2>&1; then
-  git add model*
-  echo "Added files matching 'model*'"
-else
-  echo "Warning: No files matching 'model*' found"
-fi
-
-# For controller*/*.yaml pattern
-if find controller* -name "*.yaml" 2>/dev/null | grep -q .; then
-  git add controller*/*.yaml
-  echo "Added YAML files in controller directories"
-else
-  echo "Warning: No files matching 'controller*/*.yaml' found"
-fi
-
-# Add specific files with checks
-for file in docker-compose.yml container-names.json; do
-  if [ -f "$file" ]; then
-    git add "$file"
-    echo "Added $file"
-  else
-    echo "Warning: $file not found"
-  fi
-done
-
-# Check if any files were added
-if [ -z "$(git status --porcelain)" ]; then
-  echo "Error: No matching files found to add. Cannot create empty repository."
-  exit 1
-fi
-
-# Commit the files
-git commit -m "Initial commit with selected files"
-
-# Add the new remote
+# Change the remote origin to the new repository
 echo "Setting new remote origin..."
+git remote remove origin
 git remote add origin "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$NEW_REPO_NAME.git"
-
-# Create main branch
-git branch -M main
 
 # Push to the new repository
 echo "Pushing files to new repository..."
 git push --set-upstream origin main
-
-echo "Process completed successfully!"
 
 # Run Docker Compose
 echo "Starting Docker services..."
