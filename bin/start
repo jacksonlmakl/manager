@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ensure script exits on failure
-set -e
+# set -e
 # Start the main containers
 echo "Starting main containers..."
 docker compose up -d
@@ -26,7 +26,7 @@ for container_id in $container_ids; do
   
   if sudo docker container exec $container_id sudo bash bin/run > "$temp_log_file" 2>&1; then
     # Filter out "requirement already satisfied" and similar messages
-    grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|installing" "$temp_log_file" > "$log_file"
+    grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|Installing\|Collecting" "$temp_log_file" > "$log_file"
     
     # Show the filtered log content
     cat "$log_file"
