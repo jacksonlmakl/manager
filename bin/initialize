@@ -37,12 +37,38 @@ rm -rf .git
 # Initialize a new git repository
 git init
 
-# Add only the specific files
-git add model* controller*/*.yaml docker-compose.yml container-names.json
+# Add files individually to better handle errors
+echo "Attempting to add required files..."
+
+# For model* pattern
+if ls model* 1> /dev/null 2>&1; then
+  git add model*
+  echo "Added files matching 'model*'"
+else
+  echo "Warning: No files matching 'model*' found"
+fi
+
+# For controller*/*.yaml pattern
+if find controller* -name "*.yaml" 2>/dev/null | grep -q .; then
+  git add controller*/*.yaml
+  echo "Added YAML files in controller directories"
+else
+  echo "Warning: No files matching 'controller*/*.yaml' found"
+fi
+
+# Add specific files with checks
+for file in docker-compose.yml container-names.json; do
+  if [ -f "$file" ]; then
+    git add "$file"
+    echo "Added $file"
+  else
+    echo "Warning: $file not found"
+  fi
+done
 
 # Check if any files were added
 if [ -z "$(git status --porcelain)" ]; then
-  echo "Error: No matching files found to add"
+  echo "Error: No matching files found to add. Cannot create empty repository."
   exit 1
 fi
 
