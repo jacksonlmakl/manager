@@ -1653,6 +1653,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
         });
     }
     
+    // Execute the command after initial command function called
     function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName = null) {
         const outputElement = document.getElementById('output');
         const loadingElement = document.getElementById('loading');
@@ -1710,9 +1711,9 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 
                 showToast(`${capitalizeFirstLetter(command)} completed successfully`, "success");
                 
-                // If this was a container list command, update the container list
+                // Handle container-list specifically - we'll just refresh it with the simpler method
                 if (command === 'containers-list') {
-                    updateContainerList(data.output);
+                    refreshContainerList();
                 }
                 
                 // If this was a log command, also update the log selector
@@ -1737,7 +1738,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
         });
     }
     
-    // Function to refresh container list
+    // Function to refresh container list - simplified version
     function refreshContainerList() {
         const githubKey = document.getElementById('github-key').value;
         const repoName = document.getElementById('repo-name').value;
@@ -1749,11 +1750,45 @@ cat > "$APP_DIR/index.html" << 'EOL'
         
         // Show the containers card
         document.getElementById('active-containers-card').style.display = 'block';
+        document.getElementById('container-list-container').innerHTML = '<div class="loading" style="display:block;text-align:center;padding:20px;"><div class="spinner"></div><p>Loading containers...</p></div>';
         
-        // Clear container search field
-        document.getElementById('container-search').value = '';
-        
-        executeCommand('containers-list');
+        // Execute the containers-list command to get the output
+        fetch('/api/execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                command: 'containers-list',
+                githubKey: githubKey,
+                repoName: repoName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.output) {
+                updateContainerList(data.output);
+            } else {
+                document.getElementById('container-list-container').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>No data received</h3>
+                        <p>The containers-list command returned no data.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error listing containers:', error);
+            document.getElementById('container-list-container').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error listing containers</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+            showToast("Error listing containers", "error");
+        });
     }
     
     // Function to update container list display
@@ -2191,7 +2226,7 @@ const executeCommand = (command, githubKey, repoName, req = {}) => {
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} "${containerName}"`;
             break;
         case 'containers-list':
-            // Use the custom containers-list script as originally intended
+            // Use the original containers-list script without any modifications
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/containers-list`;
             break;
         default:
