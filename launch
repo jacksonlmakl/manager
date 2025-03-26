@@ -1302,42 +1302,98 @@ cat > "$APP_DIR/index.html" << 'EOL'
     }
     
     // Parse container output to extract information
-    function parseContainerOutput(output) {
-        const containers = [];
-        const lines = output.split('\n');
-        
-        // Regex to find URLs in the output
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        
-        // Skip header line if it exists and process each line
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line && !line.startsWith('CONTAINER ID') && line.includes('|')) {
-                // Split by pipe character which is often used as a delimiter in formatted output
-                const parts = line.split('|').map(part => part.trim());
-                
-                if (parts.length >= 3) {
-                    // Extract URL from output if it exists
-                    const urls = [];
-                    for (let j = 0; j < lines.length; j++) {
-                        if (lines[j].includes(parts[0])) { // If line contains container ID
-                            const matches = lines[j].match(urlRegex);
-                            if (matches) urls.push(...matches);
-                        }
-                    }
-                    
-                    containers.push({
-                        id: parts[0],
-                        name: parts[1],
-                        status: parts[2],
-                        url: urls.length > 0 ? urls[0] : null
-                    });
-                }
+// Parse container output to extract information
+function parseContainerOutput(output) {
+    const containers = [];
+    const lines = output.split('\n');
+    
+    // Skip header lines if they exist
+    let startLine = 0;
+    if (lines[0] && lines[0].includes('URL') && lines[0].includes('STATUS')) {
+        startLine = 2; // Skip header and separator line
+    }
+    
+    // Process each line
+    for (let i = startLine; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line && line.includes('|')) {
+            // Split by pipe character which is used as a delimiter in formatted output
+            const parts = line.split('|').map(part => part.trim());
+            
+            if (parts.length >= 3) {
+                containers.push({
+                    url: parts[0],
+                    status: parts[1],
+                    name: parts[2],
+                    customName: parts[3] || ''
+                });
             }
         }
-        
-        return containers;
     }
+    
+    return containers;
+}
+
+// Function to update container list display
+function updateContainerList(output) {
+    const containersCard = document.getElementById('active-containers-card');
+    const containerListContainer = document.getElementById('container-list-container');
+    
+    // Extract container information from output
+    const containers = parseContainerOutput(output);
+    
+    if (containers.length > 0) {
+        containersCard.style.display = 'block';
+        
+        // Create table for containers
+        let tableHTML = `
+            <div class="container-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Status</th>
+                            <th>Container Name</th>
+                            <th>Display Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        containers.forEach(container => {
+            const statusClass = container.status.toLowerCase() === 'active' ? 'status-running' : 'status-stopped';
+            
+            tableHTML += `
+                <tr>
+                    <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
+                    <td><span class="status-badge ${statusClass}">${container.status}</span></td>
+                    <td>${container.name}</td>
+                    <td>${container.customName || ''}</td>
+                    <td>
+                        <button class="btn-${container.status === 'Active' ? 'stop' : 'start'}" 
+                                style="height: 32px; padding: 4px 8px;" 
+                                onclick="executeCommand('${container.status === 'Active' ? 'stop' : 'start'}-containers')">
+                            <i class="fas fa-${container.status === 'Active' ? 'stop' : 'play'}-circle"></i>
+                            ${container.status === 'Active' ? 'Stop' : 'Start'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        containerListContainer.innerHTML = tableHTML;
+    } else {
+        containerListContainer.innerHTML = "<p>No containers found.</p>";
+        containersCard.style.display = 'none';
+    }
+}
     
     // Process output to make URLs clickable
     function processOutput(output) {
