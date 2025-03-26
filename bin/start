@@ -28,6 +28,7 @@ for container_id in $container_ids; do
   echo "📂 Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
   #
+  # Try to copy controller.yaml from container
   if docker cp "$container_id":/app/controller.yaml ./tmp_controller.yaml; then
     echo "✅ Successfully copied controller.yaml from $container_id"
   else
@@ -35,16 +36,13 @@ for container_id in $container_ids; do
     continue
   fi
   
-  # Directly get raw schedule value from file — no sed, no quote stripping
+  # Parse schedule using yq
   schedule=$(yq -r '.schedule // ""' ./tmp_controller.yaml)
   rm -f ./tmp_controller.yaml
   
   echo "**DEBUG: Schedule for $container_name is: '$schedule'"
   
-  # Show word count for clarity
-  echo "🔍 Word count: $(wc -w <<< "$schedule")"
-  
-  # Cron regex validation (5 fields)
+  # Cron regex validation (5 space-separated fields)
   cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
   if [[ "$schedule" =~ $cron_regex ]]; then
     echo "⏭️  Valid schedule found — skipping direct run"
@@ -52,8 +50,6 @@ for container_id in $container_ids; do
     continue
   else
     echo "⚠️  No valid schedule found — running execution manually"
-
-
 
 
 
