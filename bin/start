@@ -28,7 +28,9 @@ for container_id in $container_ids; do
   echo "📂 Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
   #
-  schedule=$(docker exec "$container_id" yq -r '.schedule // ""' controller.yaml 2>/dev/null)
+  docker cp "$container_id":/app/controller.yaml ./tmp_controller"_$container_id".yaml
+  schedule=$(yq -r '.schedule // ""' ./tmp_controller"_$container_id".yaml)
+  rm ./tmp_controller_"$container_id".yaml
   echo "**DEBUG: Schedule for $container_name is: '$schedule'"
   
   cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
