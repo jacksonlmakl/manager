@@ -45,8 +45,7 @@ for container_id in $container_ids; do
     echo "**DEBUG: Schedule for $container_name is: '$schedule'"
     
     # Cron regex validation (5 space-separated fields)
-    cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
-    if [[ "$schedule" =~ $cron_regex ]]; then
+    if [[ "$schedule" != '' ]]; then
       echo "⏭️  Valid schedule found — skipping direct run"
       docker exec "$container_id" bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
       continue
