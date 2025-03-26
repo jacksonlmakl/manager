@@ -26,21 +26,40 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
     -d "{\"name\": \"$NEW_REPO_NAME\", \"private\": false}" \
     https://api.github.com/user/repos
 
-# Clone the existing repository
-echo "Cloning 'deploy' repository..."
-git clone https://github.com/jacksonlmakl/deploy.git "$NEW_REPO_NAME"
-
 # Change to the new directory
 cd "$NEW_REPO_NAME"
 
-# Change the remote origin to the new repository
+# Create a fresh git repository with only the specified files
+echo "Creating a fresh repository with only the required files..."
+rm -rf .git
+
+# Initialize a new git repository
+git init
+
+# Add only the specific files
+git add model* controller*/*.yaml docker-compose.yml container-names.json
+
+# Check if any files were added
+if [ -z "$(git status --porcelain)" ]; then
+  echo "Error: No matching files found to add"
+  exit 1
+fi
+
+# Commit the files
+git commit -m "Initial commit with selected files"
+
+# Add the new remote
 echo "Setting new remote origin..."
-git remote remove origin
 git remote add origin "https://$GITHUB_TOKEN@github.com/$GITHUB_USER/$NEW_REPO_NAME.git"
+
+# Create main branch
+git branch -M main
 
 # Push to the new repository
 echo "Pushing files to new repository..."
 git push --set-upstream origin main
+
+echo "Process completed successfully!"
 
 # Run Docker Compose
 echo "Starting Docker services..."
