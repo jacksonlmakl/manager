@@ -6,7 +6,7 @@ set -e
 if ! command -v yq &> /dev/null; then
     echo "❌ Error: yq is not installed. Please install it first."
     echo "   You can install it with: sudo apt-get install yq"
-    exit 1
+    sudo apt-get install yq -f
 fi
 
 # Create tmp directory if it doesn't exist
