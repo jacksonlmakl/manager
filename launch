@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# Script to launch the Manager CLI Web Interface
+# Enhanced Script to launch the Manager CLI Web Interface
 # Author: Jackson Makl
 # Date: March 19, 2025
+# Updated: March 26, 2025
 
 echo "==============================================="
-echo "  Launching Manager CLI Web Interface"
+echo "  Launching Enhanced Manager CLI Web Interface"
 echo "==============================================="
 
 # Define path to the web application
@@ -168,7 +169,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        select {
             width: 100%;
             padding: 12px 16px 12px 46px;
             border: 1px solid var(--border);
@@ -180,7 +182,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
 
         input[type="text"]:focus,
-        input[type="password"]:focus {
+        input[type="password"]:focus,
+        select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
@@ -376,6 +379,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
             color: #27C93F;
         }
 
+        .terminal a {
+            color: #3B82F6;
+            text-decoration: underline;
+        }
+
+        .terminal a:hover {
+            color: #60A5FA;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -451,6 +463,209 @@ cat > "$APP_DIR/index.html" << 'EOL'
             opacity: 1;
         }
 
+        /* Container List Styling */
+        .container-list {
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .container-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .container-list th {
+            background-color: var(--bg);
+            color: var(--text);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .container-list td {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .container-list tr:hover {
+            background-color: var(--primary-light);
+        }
+
+        .container-list .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-running {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-stopped {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Log Viewer */
+        .log-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .log-selector select {
+            flex: 1;
+            padding-left: 16px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            margin: 10% auto;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            width: 90%;
+            max-width: 600px;
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--text);
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-secondary);
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            background-color: var(--surface);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 16px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .toast-success {
+            border-left-color: var(--success);
+        }
+
+        .toast-error {
+            border-left-color: var(--danger);
+        }
+
+        .toast-warning {
+            border-left-color: var(--warning);
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+
+        /* Tabs for Output Container */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 0 16px;
@@ -468,6 +683,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
             .app-header .version {
                 display: none;
             }
+            
+            .log-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
 </head>
@@ -478,7 +698,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 <i class="fas fa-cubes"></i>
             </div>
             <h1>Container Manager</h1>
-            <span class="version">v2.1.0</span>
+            <span class="version">v2.2.0</span>
         </div>
         
         <div class="card">
@@ -567,7 +787,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <i class="fas fa-plus-circle"></i> Add
                         <span class="tooltiptext">Add a new container</span>
                     </button>
-                    <button class="btn-list tooltip" onclick="executeCommand('containers-list')">
+                    <button class="btn-list tooltip" onclick="refreshContainerList()">
                         <i class="fas fa-list"></i> List
                         <span class="tooltiptext">List all containers</span>
                     </button>
@@ -575,9 +795,25 @@ cat > "$APP_DIR/index.html" << 'EOL'
             </div>
         </div>
         
+        <!-- Active Containers Display -->
+        <div class="card" id="active-containers-card" style="display: none;">
+            <div class="card-header">
+                <h2><i class="fas fa-signal"></i>Active Containers</h2>
+                <div class="actions-menu">
+                    <button title="Refresh container list" aria-label="Refresh container list" onclick="refreshContainerList()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="container-list-container">
+                <p>No containers found. Click "List" to refresh.</p>
+            </div>
+        </div>
+        
+        <!-- Output Container with Tabs -->
         <div class="card output-container">
             <div class="card-header">
-                <h2><i class="fas fa-desktop"></i>Command Output</h2>
+                <h2><i class="fas fa-desktop"></i>Dashboard</h2>
                 <div class="actions-menu">
                     <button title="Clear output" aria-label="Clear output" onclick="clearOutput()">
                         <i class="fas fa-eraser"></i>
@@ -588,27 +824,80 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 </div>
             </div>
             
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Executing command, please wait...</p>
+            <div class="tabs">
+                <div class="tab active" data-tab="terminal">Terminal Output</div>
+                <div class="tab" data-tab="logs">Log Viewer</div>
             </div>
             
-            <div class="terminal-header">
-                <span>terminal@container-manager</span>
-                <div class="dots">
-                    <div class="dot dot-red"></div>
-                    <div class="dot dot-yellow"></div>
-                    <div class="dot dot-green"></div>
+            <div class="tab-content active" data-tab-content="terminal">
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Executing command, please wait...</p>
                 </div>
+                
+                <div class="terminal-header">
+                    <span>terminal@container-manager</span>
+                    <div class="dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                </div>
+                <div class="terminal" id="output">No command executed yet.</div>
             </div>
-            <div class="terminal" id="output">No command executed yet.</div>
+            
+            <div class="tab-content" data-tab-content="logs">
+                <div class="log-selector">
+                    <div class="input-wrapper">
+                        <i class="fas fa-file-alt"></i>
+                        <select id="log-file-selector">
+                            <option value="">Select a log file...</option>
+                        </select>
+                    </div>
+                    <button onclick="loadSelectedLog()">
+                        <i class="fas fa-eye"></i> View Log
+                    </button>
+                    <button onclick="refreshLogList()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="terminal-header">
+                    <span id="log-filename">No log file selected</span>
+                    <div class="dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                </div>
+                <div class="terminal" id="log-content">Select a log file to view its contents.</div>
+            </div>
         </div>
         
         <div class="status-bar">
-            <div>Manager CLI Web Interface <span class="badge badge-primary">Beta</span></div>
+            <div>Manager CLI Web Interface <span class="badge badge-primary">v2.2.0</span></div>
             <div>© 2025 Jackson Makl</div>
         </div>
     </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Action</h3>
+                <span class="modal-close" onclick="closeModal('confirm-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message">Are you sure you want to proceed?</p>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button onclick="closeModal('confirm-modal')" style="background-color: var(--secondary);">Cancel</button>
+                <button id="confirm-action" style="background-color: var(--primary);">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 
     <script>
     document.addEventListener('DOMContentLoaded', async function() {
@@ -659,94 +948,429 @@ cat > "$APP_DIR/index.html" << 'EOL'
     
         document.getElementById('github-key').addEventListener('input', saveToStorageAndFile);
         document.getElementById('repo-name').addEventListener('input', saveToStorageAndFile);
+        
+        // Initialize tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabName = tab.getAttribute('data-tab');
+                document.querySelector(`.tab-content[data-tab-content="${tabName}"]`).classList.add('active');
+                
+                // If Log Viewer tab is activated, refresh log list
+                if (tabName === 'logs') {
+                    refreshLogList();
+                }
+            });
+        });
+        
+        // Initial container list load if credentials exist
+        if (savedGithubKey && savedRepoName) {
+            setTimeout(() => refreshContainerList(), 1000);
+        }
     });
 
+    // Function to show a confirmable action
+    function confirmAction(message, actionCallback) {
+        const modal = document.getElementById('confirm-modal');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmButton = document.getElementById('confirm-action');
         
-        function executeCommand(command) {
-            const githubKey = document.getElementById('github-key').value;
-            const repoName = document.getElementById('repo-name').value;
-            const outputElement = document.getElementById('output');
-            const loadingElement = document.getElementById('loading');
-            const rememberKey = document.getElementById('remember-key').checked;
-            const rememberRepo = document.getElementById('remember-repo').checked;
-            
-            // Validate inputs
-            if (!githubKey || !repoName) {
-                outputElement.textContent = "Error: GitHub Personal Access Token and Repository Name are required!";
-                return;
-            }
-            
-            if (rememberKey) {
-                localStorage.setItem('githubKey', githubKey);
-            } else {
-                localStorage.removeItem('githubKey');
-            }
-            
-            if (rememberRepo) {
-                localStorage.setItem('repoName', repoName);
-            } else {
-                localStorage.removeItem('repoName');
-            }
-            
-            // Show loading indicator
-            loadingElement.style.display = 'block';
-            outputElement.textContent = `Executing ${command}...`;
-            
-            // Make a fetch request to the backend to execute the command
-            fetch('/api/execute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    command: command,
-                    githubKey: githubKey,
-                    repoName: repoName
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                loadingElement.style.display = 'none';
-                outputElement.textContent = data.output;
-            })
-            .catch(error => {
-                loadingElement.style.display = 'none';
-                outputElement.textContent = `Error executing command: ${error.message}`;
+        confirmMessage.textContent = message;
+        modal.style.display = 'block';
+        
+        // Remove previous event listener
+        const newConfirmButton = confirmButton.cloneNode(true);
+        confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+        
+        // Add new event listener
+        newConfirmButton.addEventListener('click', () => {
+            closeModal('confirm-modal');
+            actionCallback();
+        });
+    }
+    
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+    
+    // Function to show a toast notification
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        
+        let icon = 'check-circle';
+        if (type === 'error') icon = 'exclamation-circle';
+        if (type === 'warning') icon = 'exclamation-triangle';
+        
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas fa-${icon}"></i></div>
+            <div class="toast-content">${message}</div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        // Trigger reflow for animation
+        void toast.offsetWidth;
+        toast.classList.add('show');
+        
+        // Remove toast after 5 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+        
+    // Function to execute a command
+    function executeCommand(command) {
+        const githubKey = document.getElementById('github-key').value;
+        const repoName = document.getElementById('repo-name').value;
+        const outputElement = document.getElementById('output');
+        const loadingElement = document.getElementById('loading');
+        const rememberKey = document.getElementById('remember-key').checked;
+        const rememberRepo = document.getElementById('remember-repo').checked;
+        
+        // Validate inputs
+        if (!githubKey || !repoName) {
+            outputElement.innerHTML = "Error: GitHub Personal Access Token and Repository Name are required!";
+            showToast("GitHub Token and Repository Name are required", "error");
+            return;
+        }
+        
+        // Handle potentially destructive actions with confirmation
+        if (command === 'stop-containers') {
+            confirmAction("Are you sure you want to stop all containers?", () => {
+                executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
             });
+            return;
         }
         
-        function clearOutput() {
-            document.getElementById('output').textContent = 'Output cleared.';
+        executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
+    }
+    
+    function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo) {
+        const outputElement = document.getElementById('output');
+        const loadingElement = document.getElementById('loading');
+        
+        // Save to localStorage if checkbox is checked
+        if (rememberKey) {
+            localStorage.setItem('githubKey', githubKey);
+        } else {
+            localStorage.removeItem('githubKey');
         }
         
-        function copyOutput() {
-            const output = document.getElementById('output').textContent;
-            navigator.clipboard.writeText(output)
-                .then(() => {
-                    // Show a temporary success message
-                    const originalText = document.getElementById('output').textContent;
-                    document.getElementById('output').textContent = 'Output copied to clipboard!';
-                    setTimeout(() => {
-                        document.getElementById('output').textContent = originalText;
-                    }, 1500);
-                })
-                .catch(err => {
-                    console.error('Failed to copy: ', err);
+        if (rememberRepo) {
+            localStorage.setItem('repoName', repoName);
+        } else {
+            localStorage.removeItem('repoName');
+        }
+        
+        // Show loading indicator
+        loadingElement.style.display = 'block';
+        outputElement.textContent = `Executing ${command}...`;
+        
+        // Switch to terminal tab if not already active
+        activateTab('terminal');
+        
+        // Make a fetch request to the backend to execute the command
+        fetch('/api/execute', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                command: command,
+                githubKey: githubKey,
+                repoName: repoName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingElement.style.display = 'none';
+            
+            // Process output to make URLs clickable
+            if (data.output) {
+                const processedOutput = processOutput(data.output);
+                outputElement.innerHTML = processedOutput;
+                
+                showToast(`${capitalizeFirstLetter(command)} completed successfully`, "success");
+                
+                // If this was a container list command, update the container list
+                if (command === 'containers-list') {
+                    updateContainerList(data.output);
+                }
+                
+                // If this was a log command, also update the log selector
+                if (command === 'get-logs') {
+                    refreshLogList();
+                }
+            } else {
+                outputElement.textContent = "Command executed but no output was returned.";
+            }
+        })
+        .catch(error => {
+            loadingElement.style.display = 'none';
+            outputElement.textContent = `Error executing command: ${error.message}`;
+            showToast(`Error executing ${command}`, "error");
+        });
+    }
+    
+    // Function to refresh container list
+    function refreshContainerList() {
+        executeCommand('containers-list');
+    }
+    
+    // Function to update container list display
+    function updateContainerList(output) {
+        const containersCard = document.getElementById('active-containers-card');
+        const containerListContainer = document.getElementById('container-list-container');
+        
+        // Extract container information from output
+        const containers = parseContainerOutput(output);
+        
+        if (containers.length > 0) {
+            containersCard.style.display = 'block';
+            
+            // Create table for containers
+            let tableHTML = `
+                <div class="container-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Container ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>URL</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            containers.forEach(container => {
+                const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
+                const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
+                
+                tableHTML += `
+                    <tr>
+                        <td>${container.id}</td>
+                        <td>${container.name}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
+                        <td>
+                            <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
+                                    style="height: 32px; padding: 4px 8px;" 
+                                    onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
+                                <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
+                                ${statusText === 'Running' ? 'Stop' : 'Start'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            containerListContainer.innerHTML = tableHTML;
+        } else {
+            containerListContainer.innerHTML = "<p>No containers found.</p>";
+            containersCard.style.display = 'none';
+        }
+    }
+    
+    // Parse container output to extract information
+    function parseContainerOutput(output) {
+        const containers = [];
+        const lines = output.split('\n');
+        
+        // Regex to find URLs in the output
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        
+        // Skip header line if it exists and process each line
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line && !line.startsWith('CONTAINER ID') && line.includes('|')) {
+                // Split by pipe character which is often used as a delimiter in formatted output
+                const parts = line.split('|').map(part => part.trim());
+                
+                if (parts.length >= 3) {
+                    // Extract URL from output if it exists
+                    const urls = [];
+                    for (let j = 0; j < lines.length; j++) {
+                        if (lines[j].includes(parts[0])) { // If line contains container ID
+                            const matches = lines[j].match(urlRegex);
+                            if (matches) urls.push(...matches);
+                        }
+                    }
+                    
+                    containers.push({
+                        id: parts[0],
+                        name: parts[1],
+                        status: parts[2],
+                        url: urls.length > 0 ? urls[0] : null
+                    });
+                }
+            }
+        }
+        
+        return containers;
+    }
+    
+    // Process output to make URLs clickable
+    function processOutput(output) {
+        // Regex to find URLs
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        
+        // Replace URLs with clickable links
+        return output.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+    }
+    
+    // Function to refresh log file list
+    function refreshLogList() {
+        const githubKey = document.getElementById('github-key').value;
+        const repoName = document.getElementById('repo-name').value;
+        
+        if (!githubKey || !repoName) {
+            showToast("GitHub Token and Repository Name are required", "warning");
+            return;
+        }
+        
+        fetch('/api/logs-list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                githubKey: githubKey,
+                repoName: repoName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const selector = document.getElementById('log-file-selector');
+            selector.innerHTML = '<option value="">Select a log file...</option>';
+            
+            if (data.logs && data.logs.length > 0) {
+                data.logs.forEach(log => {
+                    const option = document.createElement('option');
+                    option.value = log;
+                    option.textContent = log;
+                    selector.appendChild(option);
                 });
+            } else {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "No log files found";
+                option.disabled = true;
+                selector.appendChild(option);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching log files:', error);
+            showToast("Error fetching log files", "error");
+        });
+    }
+    
+    // Function to load the selected log file
+    function loadSelectedLog() {
+        const githubKey = document.getElementById('github-key').value;
+        const repoName = document.getElementById('repo-name').value;
+        const logFile = document.getElementById('log-file-selector').value;
+        
+        if (!logFile) {
+            showToast("Please select a log file", "warning");
+            return;
         }
+        
+        fetch('/api/view-log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                githubKey: githubKey,
+                repoName: repoName,
+                logFile: logFile
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('log-filename').textContent = logFile;
+            document.getElementById('log-content').innerHTML = processOutput(data.content);
+        })
+        .catch(error => {
+            console.error('Error loading log file:', error);
+            showToast("Error loading log file", "error");
+        });
+    }
+    
+    // Function to activate a specific tab
+    function activateTab(tabName) {
+        document.querySelectorAll('.tab').forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabName) {
+                tab.click();
+            }
+        });
+    }
+    
+    // Utility function to clear output
+    function clearOutput() {
+        const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+        if (activeTab === 'terminal') {
+            document.getElementById('output').textContent = 'Output cleared.';
+        } else if (activeTab === 'logs') {
+            document.getElementById('log-content').textContent = 'Log view cleared.';
+        }
+    }
+    
+    // Utility function to copy output
+    function copyOutput() {
+        const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+        const elementId = activeTab === 'terminal' ? 'output' : 'log-content';
+        const output = document.getElementById(elementId).textContent;
+        
+        navigator.clipboard.writeText(output)
+            .then(() => {
+                const originalText = document.getElementById(elementId).textContent;
+                document.getElementById(elementId).textContent = 'Content copied to clipboard!';
+                setTimeout(() => {
+                    document.getElementById(elementId).textContent = originalText;
+                }, 1500);
+                showToast("Copied to clipboard", "success");
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+                showToast("Failed to copy to clipboard", "error");
+            });
+    }
+    
+    // Capitalize first letter of a string
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.replace(/-/g, ' ').slice(1);
+    }
     </script>
 </body>
 </html>
 EOL
-echo "[+] Saved web application HTML file"
+echo "[+] Saved enhanced web application HTML file"
 
 # Create the server.js file for the backend
 cat > "$APP_DIR/server.js" << 'EOL'
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const { exec } = require('child_process');
 const bodyParser = require('body-parser');
-const path = require('path');
 const app = express();
 const port = 1100;
 
@@ -803,11 +1427,13 @@ const executeCommand = (command, githubKey, repoName) => {
     });
 };
 
+// Save configuration to file
 app.post('/save-config', (req, res) => {
     fs.writeFileSync('config.json', JSON.stringify(req.body, null, 2));
     res.sendStatus(200);
 });
 
+// Load configuration from file
 app.get('/load-config', (req, res) => {
     if (fs.existsSync('config.json')) {
         const config = JSON.parse(fs.readFileSync('config.json'));
@@ -829,10 +1455,70 @@ app.post('/api/execute', async (req, res) => {
     }
 });
 
+// API endpoint to list log files
+app.post('/api/logs-list', (req, res) => {
+    const { repoName } = req.body;
+    const logDir = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'logs');
+    
+    try {
+        if (fs.existsSync(logDir)) {
+            const files = fs.readdirSync(logDir)
+                .filter(file => file.endsWith('.log'))
+                .sort((a, b) => {
+                    // Sort by modification time (newest first)
+                    return fs.statSync(path.join(logDir, b)).mtime.getTime() - 
+                           fs.statSync(path.join(logDir, a)).mtime.getTime();
+                });
+            res.json({ logs: files });
+        } else {
+            res.json({ logs: [] });
+        }
+    } catch (error) {
+        console.error('Error listing log files:', error);
+        res.status(500).json({ error: 'Error listing log files' });
+    }
+});
+
+// API endpoint to view a specific log file
+app.post('/api/view-log', (req, res) => {
+    const { repoName, logFile } = req.body;
+    const logPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'logs', logFile);
+    
+    try {
+        if (fs.existsSync(logPath)) {
+            const content = fs.readFileSync(logPath, 'utf8');
+            res.json({ content });
+        } else {
+            res.status(404).json({ error: 'Log file not found' });
+        }
+    } catch (error) {
+        console.error('Error reading log file:', error);
+        res.status(500).json({ error: 'Error reading log file' });
+    }
+});
+
 // Route for the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+// Format container output into a more structured format
+function formatContainerOutput(stdout) {
+    const lines = stdout.trim().split('\n');
+    if (lines.length <= 1) return stdout;  // No containers or just header
+    
+    let formattedOutput = "CONTAINER ID | NAME | STATUS | PORTS\n";
+    formattedOutput += "-------------------------------------------\n";
+    
+    for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].trim().split(/\s{2,}/);
+        if (parts.length >= 4) {
+            formattedOutput += `${parts[0]} | ${parts[1]} | ${parts[2]} | ${parts[3]}\n`;
+        }
+    }
+    
+    return formattedOutput;
+}
 
 // Auto-start containers on server start if credentials are available
 const autoStartContainers = async () => {
@@ -866,19 +1552,19 @@ const autoStartContainers = async () => {
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Manager CLI Web Interface running at http://localhost:${port}`);
+    console.log(`Enhanced Manager CLI Web Interface running at http://localhost:${port}`);
     // Run auto-start after server is up
     autoStartContainers();
 });
 EOL
-echo "[+] Created server.js backend file"
+echo "[+] Created enhanced server.js backend file"
 
 # Create package.json file for Node.js dependencies
 cat > "$APP_DIR/package.json" << 'EOL'
 {
   "name": "manager-cli-web-interface",
-  "version": "1.0.0",
-  "description": "Web interface for Manager CLI operations",
+  "version": "2.2.0",
+  "description": "Enhanced web interface for Manager CLI operations",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -908,7 +1594,7 @@ fi
 
 # Start the application
 echo "==============================================="
-echo "[+] Starting Manager CLI Web Interface"
+echo "[+] Starting Enhanced Manager CLI Web Interface"
 echo "[+] Press Ctrl+C to stop the server"
 echo "==============================================="
 cd "$APP_DIR" && node server.js
