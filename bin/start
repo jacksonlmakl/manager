@@ -30,7 +30,7 @@ for container_id in $container_ids; do
 
   # Extract schedule from controller.yaml inside container
   schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" controller.yaml' 2>/dev/null)
-
+  echo "**DEBUG " $schedule
   # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
   if [[ $(wc -w <<< "$schedule") -eq 5 ]]; then
     sudo docker container exec "$container_id" sudo bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
