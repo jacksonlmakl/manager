@@ -1303,36 +1303,78 @@ cat > "$APP_DIR/index.html" << 'EOL'
     
     // Parse container output to extract information
 // Parse container output to extract information
-function parseContainerOutput(output) {
-    const containers = [];
-    const lines = output.split('\n');
+// Add this function to your server.js to process container output
+// Make sure to add/modify this before the app.post('/api/execute', ...) section
+
+// Function to parse container output
+function parseContainerOutput(stdout) {
+    // This function parses output in the format:
+    // "http://3.143.3.155:3000 - Active - Container: framework-app (Inactive)"
+    const lines = stdout.trim().split('\n');
+    const result = [];
     
-    // Skip header lines if they exist
-    let startLine = 0;
-    if (lines[0] && lines[0].includes('URL') && lines[0].includes('STATUS')) {
-        startLine = 2; // Skip header and separator line
-    }
-    
-    // Process each line
-    for (let i = startLine; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
-        if (line && line.includes('|')) {
-            // Split by pipe character which is used as a delimiter in formatted output
-            const parts = line.split('|').map(part => part.trim());
-            
-            if (parts.length >= 3) {
-                containers.push({
-                    url: parts[0],
-                    status: parts[1],
-                    name: parts[2],
-                    customName: parts[3] || ''
-                });
-            }
+        if (!line) continue;
+        
+        const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+        const statusMatch = line.match(/- (Active|Inactive) -/);
+        const containerMatch = line.match(/Container: ([^\s(]+)/);
+        
+        if (urlMatch && containerMatch) {
+            result.push({
+                url: urlMatch[1],
+                status: statusMatch ? statusMatch[1] : 'Unknown',
+                containerName: containerMatch[1]
+            });
         }
     }
     
-    return containers;
+    return result;
 }
+
+// Replace the app.post('/api/execute', ...) handler with this updated version:
+
+app.post('/api/execute', async (req, res) => {
+    const { command, githubKey, repoName, containerName } = req.body;
+    
+    try {
+        // Include containerName in the request parameters
+        req.body.containerName = containerName;
+        const output = await executeCommand(command, githubKey, repoName, req);
+        
+        // Store the container name mapping if this is an add-container command
+        if (command === 'add-container' && containerName) {
+            try {
+                const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
+                let mappings = {};
+                
+                // Load existing mappings if available
+                if (fs.existsSync(mappingsPath)) {
+                    mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
+                }
+                
+                // Extract container name from output if possible
+                const match = output.match(/Container: ([^\s(]+)/);
+                if (match && match[1]) {
+                    // Store mapping by container name, not ID
+                    const containerSystemName = match[1];
+                    mappings[containerSystemName] = containerName;
+                    fs.writeFileSync(mappingsPath, JSON.stringify(mappings, null, 2));
+                    console.log(`Saved container name mapping: ${containerSystemName} -> ${containerName}`);
+                }
+            } catch (err) {
+                console.error('Error saving container name mapping:', err);
+            }
+        }
+        
+        // For container list command, we could format the output here,
+        // but for debugging purposes, we'll send the raw output now
+        res.json({ output });
+    } catch (error) {
+        res.status(500).json({ output: error });
+    }
+});
 
 // Function to update container list display
 function updateContainerList(output) {
