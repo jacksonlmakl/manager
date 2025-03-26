@@ -1,16 +1,16 @@
 #!/bin/bash
-
 # Ensure script exits on failure
 set -e
 
-# Check for required argument
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <REPO_NAME>"
+# Check for required arguments
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <REPO_NAME> [DISPLAY_NAME]"
     exit 1
 fi
 
-# Assign input argument
+# Assign input arguments
 REPO_NAME="$1"
+DISPLAY_NAME="$2"  # Optional custom display name
 
 # Define docker-compose file path
 COMPOSE_FILE="docker-compose.yml"
@@ -42,19 +42,16 @@ else
     NEW_CONTAINER_NUM=$((HIGHEST_CONTAINER + 1))
 fi
 
-mkdir "model$NEW_CONTAINER_NUM"
+mkdir -p "model$NEW_CONTAINER_NUM"
 cp model/requirements.txt "model$NEW_CONTAINER_NUM/requirements.txt"
-
-echo 'schedule: "* * * * *"  # Run Every Minute' >> controller$NEW_CONTAINER_NUM.yaml
+echo 'schedule: "* * "*  # Run Every Minute' > controller$NEW_CONTAINER_NUM.yaml
 echo 's3:' >> controller$NEW_CONTAINER_NUM.yaml
 echo '  - name: ""' >> controller$NEW_CONTAINER_NUM.yaml
 echo '  - access_key: ""' >> controller$NEW_CONTAINER_NUM.yaml
 echo '  - secret_key: ""' >> controller$NEW_CONTAINER_NUM.yaml
 
-
 # Append the new service to the docker-compose.yml file
 cat <<EOL >> "$COMPOSE_FILE"
-
   framework-$NEW_CONTAINER_NUM:
     build:
       context: .
@@ -75,4 +72,26 @@ cat <<EOL >> "$COMPOSE_FILE"
     container_name: framework-app-$NEW_CONTAINER_NUM
 EOL
 
-echo "Added framework-$NEW_CONTAINER_NUM to $COMPOSE_FILE with ports $NEW_120_PORT"
+echo "Added framework-$NEW_CONTAINER_NUM to $COMPOSE_FILE with ports $NEW_120_PORT and $NEW_150_PORT"
+
+# If a custom display name was provided, update the container-names.json file
+if [ -n "$DISPLAY_NAME" ]; then
+    # The container ID will be determined after starting, so we'll output information
+    # that the web interface can use to map the name
+    echo "Container ID: framework-app-$NEW_CONTAINER_NUM"
+    echo "Display Name: $DISPLAY_NAME"
+    
+    # Create or update the container-names.json file
+    NAMES_FILE="container-names.json"
+    
+    # Initialize the file if it doesn't exist
+    if [ ! -f "$NAMES_FILE" ]; then
+        echo "{}" > "$NAMES_FILE"
+    fi
+    
+    # We'll append information for the web interface to parse
+    # The actual mapping will happen in the server.js code after container creation
+    echo "CONTAINER_NUM=$NEW_CONTAINER_NUM"
+fi
+
+exit 0
