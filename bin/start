@@ -27,20 +27,18 @@ for container_id in $container_ids; do
   
   echo "📂 Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
-
-  # Extract schedule from controller.yaml inside container and strip quotes
-  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" controller.yaml' 2>/dev/null | sed "s/^['\"]//;s/['\"]$//")
-  echo "**DEBUG: Schedule for $container_name is '$schedule'"
+  #
+  schedule=$(docker exec "$container_id" yq -r '.schedule // ""' controller.yaml 2>/dev/null)
+  echo "**DEBUG: Schedule for $container_name is: '$schedule'"
   
-  # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
-  if [[ $(wc -w <<< "$schedule") -eq 5 ]]; then
-    sudo docker container exec "$container_id" sudo bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
-    echo "⏭️  Valid schedule found in controller.yaml inside container $container_id"
-    echo "⏳ Skipping direct run. Container will run on schedule."
-    echo "=========================="
+  cron_regex="^(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)[[:space:]]+(\*|[0-9,-*/]+)$"
+  if [[ "$schedule" =~ $cron_regex ]]; then
+    echo "⏭️  Valid schedule found — skipping direct run"
+    docker exec "$container_id" bash bin/deploy > "logs/${container_name}.deploy.log" 2>&1 &
     continue
   else
-    echo "⚠️  No valid schedule found in controller.yaml — running execution manually."
+    echo "⚠️  No valid schedule found — running execution manually"
+
 
     if sudo docker container exec "$container_id" sudo bash bin/run > "$temp_log_file" 2>&1; then
       # Filter out unimportant logs
