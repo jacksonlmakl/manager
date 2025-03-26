@@ -1129,7 +1129,6 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
         
         // Make a fetch request to the backend to execute the command
-        // Make a fetch request to the backend to execute the command
         fetch('/api/execute', {
             method: 'POST',
             headers: {
@@ -1150,8 +1149,12 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 
                 // If this was a container list command, update the container list
                 if (command === 'containers-list') {
-                    // Update the container list display
-                    updateContainerListDisplay(data.output);
+                    updateContainerList(data.output);
+                }
+                
+                // If this was a log command, also update the log selector
+                if (command === 'get-logs') {
+                    refreshLogList();
                 }
             } else {
                 outputElement.textContent = "Command executed but no output was returned.";
@@ -1162,151 +1165,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
             outputElement.textContent = `Error executing command: ${error.message}`;
             showToast(`Error executing ${command}`, "error");
         });
-
-// Add this new function to parse and display container list
-function updateContainerListDisplay(output) {
-    const containersCard = document.getElementById('active-containers-card');
-    const containerListContainer = document.getElementById('container-list-container');
-    
-    // Make sure the container is visible
-    containersCard.style.display = 'block';
-    
-    // Parse the container output
-    const containers = [];
-    const lines = output.split('\n');
-    
-    console.log("Container output to parse:", lines);
-    
-    // Parse each line that matches our expected format
-    // Example: http://3.143.3.155:3000 - Active - Container: framework-app (Inactive)
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        // Skip header lines
-        if (line.startsWith("URL") || line.startsWith("----")) continue;
-        
-        // Parse for our expected format or the table format
-        if (line.includes(" - Container: ") || line.includes("|")) {
-            let url, status, containerName, customName;
-            
-            if (line.includes("|")) {
-                // Parse table format
-                const parts = line.split('|').map(part => part.trim());
-                if (parts.length >= 3) {
-                    url = parts[0];
-                    status = parts[1];
-                    containerName = parts[2];
-                    customName = parts.length > 3 ? parts[3] : '';
-                }
-            } else {
-                // Parse the format: http://3.143.3.155:3000 - Active - Container: framework-app (Inactive)
-                const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
-                const statusMatch = line.match(/- (Active|Inactive) -/);
-                const containerMatch = line.match(/Container: ([^\s(]+)/);
-                
-                if (urlMatch) url = urlMatch[1];
-                if (statusMatch) status = statusMatch[1];
-                if (containerMatch) containerName = containerMatch[1];
-                
-                // Custom name will be filled in later
-                customName = '';
-            }
-            
-            if (url && status && containerName) {
-                containers.push({
-                    url,
-                    status,
-                    name: containerName,
-                    customName
-                });
-            }
-        }
     }
     
-    console.log("Parsed containers:", containers);
-    
-    if (containers.length > 0) {
-        // Try to get custom names if available
-        const repoName = document.getElementById('repo-name').value;
-        
-        fetch('/api/container-names', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ repoName })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const mappings = data.mappings || {};
-            console.log("Name mappings:", mappings);
-            
-            // Apply custom names to containers
-            containers.forEach(container => {
-                container.customName = mappings[container.name] || '';
-            });
-            
-            // Create the HTML table
-            renderContainerTable(containers, containerListContainer);
-        })
-        .catch(error => {
-            console.error("Error fetching container names:", error);
-            // Still render the table without custom names
-            renderContainerTable(containers, containerListContainer);
-        });
-    } else {
-        containerListContainer.innerHTML = "<p>No containers found.</p>";
-    }
-}
-
-// Function to render the container table
-function renderContainerTable(containers, containerListContainer) {
-    let tableHTML = `
-        <div class="container-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>URL</th>
-                        <th>Status</th>
-                        <th>Container Name</th>
-                        <th>Display Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-    
-    containers.forEach(container => {
-        const statusClass = container.status.toLowerCase() === 'active' ? 'status-running' : 'status-stopped';
-        
-        tableHTML += `
-            <tr>
-                <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
-                <td><span class="status-badge ${statusClass}">${container.status}</span></td>
-                <td>${container.name}</td>
-                <td>${container.customName || ''}</td>
-                <td>
-                    <button class="btn-${container.status === 'Active' ? 'stop' : 'start'}" 
-                            style="height: 32px; padding: 4px 8px;" 
-                            onclick="executeCommand('${container.status === 'Active' ? 'stop' : 'start'}-containers')">
-                        <i class="fas fa-${container.status === 'Active' ? 'stop' : 'play'}-circle"></i>
-                        ${container.status === 'Active' ? 'Stop' : 'Start'}
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-    
-    tableHTML += `
-                </tbody>
-            </table>
-        </div>
-    `;
-    
-    containerListContainer.innerHTML = tableHTML;
-}
-
     // Function to refresh container list
     function refreshContainerList() {
         executeCommand('containers-list');
