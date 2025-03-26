@@ -29,7 +29,8 @@ for container_id in $container_ids; do
   
   # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
   if [[ "$schedule" =~ ^([^\s]+\s){4}[^\s]+$ ]]; then
-    echo "⏭️  Valid schedule found in controller.yaml inside container $container_id — skipping direct run."
+    sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
+    echo "⏭️  Valid schedule found in controller.yaml inside container $container_id — skipping direct run. Deploying & Launching....."
   else
     echo "⚠️  No valid schedule found in controller.yaml — running execution manually."
   
@@ -46,7 +47,6 @@ for container_id in $container_ids; do
       echo "❌ Failed to run execution script in container $container_id"
       echo "❌ Check $log_file for details"
     fi
-    sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
   fi
 
   echo "=========================="
