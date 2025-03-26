@@ -1172,7 +1172,35 @@ cat > "$APP_DIR/index.html" << 'EOL'
         executeCommand('containers-list');
     }
     
-    // Function to update container list display
+    // Parse container output to extract information - FIXED VERSION
+    function parseContainerOutput(output) {
+        const lines = output.trim().split('\n');
+        const containers = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            // Parse each line of container output
+            const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+            const statusMatch = line.match(/- (Active|Inactive) -/);
+            const containerMatch = line.match(/Container: ([^\s(]+)/);
+            
+            if (containerMatch) {
+                const container = {
+                    id: containerMatch[1],  // This is the key that should match what's in container-names.json
+                    name: containerMatch[1], // Default name is the same as ID
+                    status: statusMatch ? statusMatch[1] : 'Unknown',
+                    url: urlMatch ? urlMatch[1] : 'N/A'
+                };
+                containers.push(container);
+            }
+        }
+        
+        return containers;
+    }
+    
+    // Function to update container list display - FIXED VERSION
     function updateContainerList(output) {
         const containersCard = document.getElementById('active-containers-card');
         const containerListContainer = document.getElementById('container-list-container');
@@ -1204,7 +1232,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                             <thead>
                                 <tr>
                                     <th>Container ID</th>
-                                    <th>Name</th>
+                                    <th>Display Name</th>
                                     <th>Status</th>
                                     <th>URL</th>
                                     <th>Actions</th>
@@ -1214,11 +1242,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 `;
                 
                 containers.forEach(container => {
-                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
-                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
+                    const statusClass = container.status.includes('Active') ? 'status-running' : 'status-stopped';
+                    const statusText = container.status.includes('Active') ? 'Running' : 'Stopped';
                     
-                    // Use custom name if available
-                    const displayName = nameMappings[container.id] || container.name;
+                    // Use custom name if available, otherwise use container ID
+                    const displayName = nameMappings[container.id] || container.id;
                     
                     tableHTML += `
                         <tr>
@@ -1248,52 +1276,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
             })
             .catch(error => {
                 console.error('Error fetching container names:', error);
-                
-                // Fallback to regular display without custom names
-                let tableHTML = `
-                    <div class="container-list">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Container ID</th>
-                                    <th>Name</th>
-                                    <th>Status</th>
-                                    <th>URL</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                
-                containers.forEach(container => {
-                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
-                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
-                    
-                    tableHTML += `
-                        <tr>
-                            <td>${container.id}</td>
-                            <td>${container.name}</td>
-                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                            <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
-                            <td>
-                                <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
-                                        style="height: 32px; padding: 4px 8px;" 
-                                        onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
-                                    <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
-                                    ${statusText === 'Running' ? 'Stop' : 'Start'}
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
-                tableHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                
-                containerListContainer.innerHTML = tableHTML;
+                // Fallback display if name fetching fails
+                displayContainersWithoutCustomNames(containers, containerListContainer);
             });
         } else {
             containerListContainer.innerHTML = "<p>No containers found.</p>";
@@ -1301,102 +1285,17 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }
     }
     
-    // Parse container output to extract information
-// Parse container output to extract information
-// Add this function to your server.js to process container output
-// Make sure to add/modify this before the app.post('/api/execute', ...) section
-
-// Function to parse container output
-function parseContainerOutput(stdout) {
-    // This function parses output in the format:
-    // "http://3.143.3.155:3000 - Active - Container: framework-app (Inactive)"
-    const lines = stdout.trim().split('\n');
-    const result = [];
-    
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
-        const statusMatch = line.match(/- (Active|Inactive) -/);
-        const containerMatch = line.match(/Container: ([^\s(]+)/);
-        
-        if (urlMatch && containerMatch) {
-            result.push({
-                url: urlMatch[1],
-                status: statusMatch ? statusMatch[1] : 'Unknown',
-                containerName: containerMatch[1]
-            });
-        }
-    }
-    
-    return result;
-}
-
-// Replace the app.post('/api/execute', ...) handler with this updated version:
-
-app.post('/api/execute', async (req, res) => {
-    const { command, githubKey, repoName, containerName } = req.body;
-    
-    try {
-        // Include containerName in the request parameters
-        req.body.containerName = containerName;
-        const output = await executeCommand(command, githubKey, repoName, req);
-        
-        // Store the container name mapping if this is an add-container command
-        if (command === 'add-container' && containerName) {
-            try {
-                const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
-                let mappings = {};
-                
-                // Load existing mappings if available
-                if (fs.existsSync(mappingsPath)) {
-                    mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
-                }
-                
-                // Extract container name from output if possible
-                const match = output.match(/Container: ([^\s(]+)/);
-                if (match && match[1]) {
-                    // Store mapping by container name, not ID
-                    const containerSystemName = match[1];
-                    mappings[containerSystemName] = containerName;
-                    fs.writeFileSync(mappingsPath, JSON.stringify(mappings, null, 2));
-                    console.log(`Saved container name mapping: ${containerSystemName} -> ${containerName}`);
-                }
-            } catch (err) {
-                console.error('Error saving container name mapping:', err);
-            }
-        }
-        
-        // For container list command, we could format the output here,
-        // but for debugging purposes, we'll send the raw output now
-        res.json({ output });
-    } catch (error) {
-        res.status(500).json({ output: error });
-    }
-});
-
-// Function to update container list display
-function updateContainerList(output) {
-    const containersCard = document.getElementById('active-containers-card');
-    const containerListContainer = document.getElementById('container-list-container');
-    
-    // Extract container information from output
-    const containers = parseContainerOutput(output);
-    
-    if (containers.length > 0) {
-        containersCard.style.display = 'block';
-        
-        // Create table for containers
+    // Helper function for fallback display when fetching names fails
+    function displayContainersWithoutCustomNames(containers, containerListContainer) {
         let tableHTML = `
             <div class="container-list">
                 <table>
                     <thead>
                         <tr>
-                            <th>URL</th>
+                            <th>Container ID</th>
+                            <th>Name</th>
                             <th>Status</th>
-                            <th>Container Name</th>
-                            <th>Display Name</th>
+                            <th>URL</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1404,20 +1303,21 @@ function updateContainerList(output) {
         `;
         
         containers.forEach(container => {
-            const statusClass = container.status.toLowerCase() === 'active' ? 'status-running' : 'status-stopped';
+            const statusClass = container.status.includes('Active') ? 'status-running' : 'status-stopped';
+            const statusText = container.status.includes('Active') ? 'Running' : 'Stopped';
             
             tableHTML += `
                 <tr>
-                    <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
-                    <td><span class="status-badge ${statusClass}">${container.status}</span></td>
+                    <td>${container.id}</td>
                     <td>${container.name}</td>
-                    <td>${container.customName || ''}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
                     <td>
-                        <button class="btn-${container.status === 'Active' ? 'stop' : 'start'}" 
+                        <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
                                 style="height: 32px; padding: 4px 8px;" 
-                                onclick="executeCommand('${container.status === 'Active' ? 'stop' : 'start'}-containers')">
-                            <i class="fas fa-${container.status === 'Active' ? 'stop' : 'play'}-circle"></i>
-                            ${container.status === 'Active' ? 'Stop' : 'Start'}
+                                onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
+                            <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
+                            ${statusText === 'Running' ? 'Stop' : 'Start'}
                         </button>
                     </td>
                 </tr>
@@ -1431,11 +1331,7 @@ function updateContainerList(output) {
         `;
         
         containerListContainer.innerHTML = tableHTML;
-    } else {
-        containerListContainer.innerHTML = "<p>No containers found.</p>";
-        containersCard.style.display = 'none';
     }
-}
     
     // Process output to make URLs clickable
     function processOutput(output) {
@@ -1675,11 +1571,14 @@ app.post('/api/execute', async (req, res) => {
                     mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
                 }
                 
-                // Extract container ID from output if possible
-                const match = output.match(/Container ID: ([a-zA-Z0-9]+)/);
+                // Extract container name from output if possible
+                const match = output.match(/Container: ([^\s(]+)/);
                 if (match && match[1]) {
-                    mappings[match[1]] = containerName;
+                    // Store mapping by container name (e.g., framework-app), not ID
+                    const containerSystemName = match[1];
+                    mappings[containerSystemName] = containerName;
                     fs.writeFileSync(mappingsPath, JSON.stringify(mappings, null, 2));
+                    console.log(`Saved container name mapping: ${containerSystemName} -> ${containerName}`);
                 }
             } catch (err) {
                 console.error('Error saving container name mapping:', err);
