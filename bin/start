@@ -24,32 +24,28 @@ for container_id in $container_ids; do
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
   
-  # Extract schedule from controller.yaml inside container
-  schedule=$(sudo docker container exec "$container_id" sudo sh -c 'yq -r ".schedule // empty" /app/controller.yaml' 2>/dev/null)
-  
-  # Check if schedule is present and looks like a valid cron expression (5 space-separated fields)
-  if [[ "$schedule" =~ ^([^\s]+\s){4}[^\s]+$ ]]; then
-    sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
-    echo "⏭️  Valid schedule found in controller.yaml inside container $container_id — skipping direct run. Deploying & Launching....."
-  else
-    echo "⚠️  No valid schedule found in controller.yaml — running execution manually."
-  
-    if sudo docker container exec "$container_id" sudo bash bin/run > "$temp_log_file" 2>&1; then
-      grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|Downloading" "$temp_log_file" > "$log_file"
-      cat "$log_file"
-      echo "--- Job Output End ---"
-      echo "✅ Successfully ran execution script in container $container_id"
-      echo "✅ Filtered logs saved to $log_file"
-      rm "$temp_log_file"
-    else
-      mv "$temp_log_file" "$log_file"
-      echo "--- Job Output End ---"
-      echo "❌ Failed to run execution script in container $container_id"
-      echo "❌ Check $log_file for details"
-    fi
-  fi
+  if sudo docker container exec $container_id sudo bash bin/run > "$temp_log_file" 2>&1; then
+    # Filter out "requirement already satisfied" and similar messages
+    grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|installing" "$temp_log_file" > "$log_file"
+    
+    # Show the filtered log content
+    cat "$log_file"
 
+    echo "--- Job Output End ---"
+    echo "✅ Successfully ran execution script in container $container_id"
+    echo "✅ Filtered logs saved to $log_file"
+    # Remove temporary log file
+    rm "$temp_log_file"
+  else
+    # On error, keep the full log content
+    mv "$temp_log_file" "$log_file"
+    echo "--- Job Output End ---"
+    echo "❌ Failed to run execution script in container $container_id"
+    echo "❌ Check $log_file for details"
+  fi
   echo "=========================="
 done
-
+sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
 echo "All containers started and execution scripts executed"
+
+
