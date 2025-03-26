@@ -23,6 +23,7 @@ for container_id in $container_ids; do
   # Execute the run script in each container and save output to temporary log file
   echo "Running execution script in container $container_id"
   echo "--- Job Output Begin ---"
+  sudo docker container exec "$container_id" sudo bash bin/deploy > deploy.txt 2>&1 &
   if sudo docker container exec $container_id sudo bash bin/run > "$temp_log_file" 2>&1; then
     # Filter out "requirement already satisfied" and similar messages
     grep -v "Requirement already satisfied\|is already the newest version\|upgraded, 0 newly installed, 0 to remove\|WARNING: apt does not\|InRelease\|installing" "$temp_log_file" > "$log_file"
