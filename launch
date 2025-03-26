@@ -779,17 +779,13 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <i class="fas fa-play-circle"></i> Start
                         <span class="tooltiptext">Start all containers</span>
                     </button>
-                    <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
-                        <i class="fas fa-file-alt"></i> Logs
-                        <span class="tooltiptext">View Logs From Latest Launch</span>
-                    </button>
-                    <button class="btn-add tooltip" onclick="executeCommand('add-container')">
+                    <button class="btn-add tooltip" onclick="showAddContainerModal()">
                         <i class="fas fa-plus-circle"></i> Add
                         <span class="tooltiptext">Add a new container</span>
                     </button>
                     <button class="btn-list tooltip" onclick="refreshContainerList()">
                         <i class="fas fa-list"></i> List
-                        <span class="tooltiptext">List all containers</span>
+                        <span class="tooltiptext">List Containers</span>
                     </button>
                 </div>
             </div>
@@ -892,6 +888,30 @@ cat > "$APP_DIR/index.html" << 'EOL'
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
                 <button onclick="closeModal('confirm-modal')" style="background-color: var(--secondary);">Cancel</button>
                 <button id="confirm-action" style="background-color: var(--primary);">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Container Modal -->
+    <div id="add-container-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Container</h3>
+                <span class="modal-close" onclick="closeModal('add-container-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="container-name">Container Display Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-tag"></i>
+                        <input type="text" id="container-name" placeholder="Enter a name for this container">
+                    </div>
+                    <div class="input-help">This name will be used for display in the UI. Backend will still use framework-app naming.</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button onclick="closeModal('add-container-modal')" style="background-color: var(--secondary);">Cancel</button>
+                <button onclick="addContainerWithName()" style="background-color: var(--primary);">Add Container</button>
             </div>
         </div>
     </div>
@@ -1027,8 +1047,26 @@ cat > "$APP_DIR/index.html" << 'EOL'
         }, 5000);
     }
         
+    // Show the Add Container modal
+    function showAddContainerModal() {
+        document.getElementById('container-name').value = '';
+        document.getElementById('add-container-modal').style.display = 'block';
+    }
+    
+    // Add a container with custom name
+    function addContainerWithName() {
+        const containerName = document.getElementById('container-name').value.trim();
+        if (!containerName) {
+            showToast("Please enter a container name", "warning");
+            return;
+        }
+        
+        closeModal('add-container-modal');
+        executeCommand('add-container', containerName);
+    }
+    
     // Function to execute a command
-    function executeCommand(command) {
+    function executeCommand(command, containerName = null) {
         const githubKey = document.getElementById('github-key').value;
         const repoName = document.getElementById('repo-name').value;
         const outputElement = document.getElementById('output');
@@ -1046,15 +1084,15 @@ cat > "$APP_DIR/index.html" << 'EOL'
         // Handle potentially destructive actions with confirmation
         if (command === 'stop-containers') {
             confirmAction("Are you sure you want to stop all containers?", () => {
-                executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
+                executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName);
             });
             return;
         }
         
-        executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo);
+        executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName);
     }
     
-    function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo) {
+    function executeCommandAfterValidation(command, githubKey, repoName, rememberKey, rememberRepo, containerName = null) {
         const outputElement = document.getElementById('output');
         const loadingElement = document.getElementById('loading');
         
@@ -1078,17 +1116,25 @@ cat > "$APP_DIR/index.html" << 'EOL'
         // Switch to terminal tab if not already active
         activateTab('terminal');
         
+        // Prepare request body
+        const requestBody = {
+            command: command,
+            githubKey: githubKey,
+            repoName: repoName
+        };
+        
+        // Add container name if provided
+        if (containerName) {
+            requestBody.containerName = containerName;
+        }
+        
         // Make a fetch request to the backend to execute the command
         fetch('/api/execute', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                command: command,
-                githubKey: githubKey,
-                repoName: repoName
-            })
+            body: JSON.stringify(requestBody)
         })
         .then(response => response.json())
         .then(data => {
@@ -1137,51 +1183,118 @@ cat > "$APP_DIR/index.html" << 'EOL'
         if (containers.length > 0) {
             containersCard.style.display = 'block';
             
-            // Create table for containers
-            let tableHTML = `
-                <div class="container-list">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Container ID</th>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>URL</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            containers.forEach(container => {
-                const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
-                const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
+            // Fetch custom container names if available
+            fetch('/api/container-names', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    repoName: document.getElementById('repo-name').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const nameMappings = data.mappings || {};
+                
+                // Create table for containers
+                let tableHTML = `
+                    <div class="container-list">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Container ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>URL</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                containers.forEach(container => {
+                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
+                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
+                    
+                    // Use custom name if available
+                    const displayName = nameMappings[container.id] || container.name;
+                    
+                    tableHTML += `
+                        <tr>
+                            <td>${container.id}</td>
+                            <td>${displayName}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
+                            <td>
+                                <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
+                                        style="height: 32px; padding: 4px 8px;" 
+                                        onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
+                                    <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
+                                    ${statusText === 'Running' ? 'Stop' : 'Start'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
                 
                 tableHTML += `
-                    <tr>
-                        <td>${container.id}</td>
-                        <td>${container.name}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
-                        <td>
-                            <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
-                                    style="height: 32px; padding: 4px 8px;" 
-                                    onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
-                                <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
-                                ${statusText === 'Running' ? 'Stop' : 'Start'}
-                            </button>
-                        </td>
-                    </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 `;
+                
+                containerListContainer.innerHTML = tableHTML;
+            })
+            .catch(error => {
+                console.error('Error fetching container names:', error);
+                
+                // Fallback to regular display without custom names
+                let tableHTML = `
+                    <div class="container-list">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Container ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>URL</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                containers.forEach(container => {
+                    const statusClass = container.status.includes('Up') ? 'status-running' : 'status-stopped';
+                    const statusText = container.status.includes('Up') ? 'Running' : 'Stopped';
+                    
+                    tableHTML += `
+                        <tr>
+                            <td>${container.id}</td>
+                            <td>${container.name}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>${container.url ? `<a href="${container.url}" target="_blank">${container.url} <i class="fas fa-external-link-alt"></i></a>` : 'N/A'}</td>
+                            <td>
+                                <button class="btn-${statusText === 'Running' ? 'stop' : 'start'}" 
+                                        style="height: 32px; padding: 4px 8px;" 
+                                        onclick="executeCommand('${statusText === 'Running' ? 'stop' : 'start'}-containers')">
+                                    <i class="fas fa-${statusText === 'Running' ? 'stop' : 'play'}-circle"></i>
+                                    ${statusText === 'Running' ? 'Stop' : 'Start'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                containerListContainer.innerHTML = tableHTML;
             });
-            
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            containerListContainer.innerHTML = tableHTML;
         } else {
             containerListContainer.innerHTML = "<p>No containers found.</p>";
             containersCard.style.display = 'none';
@@ -1381,7 +1494,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname)));
 
 // Helper function to execute commands
-const executeCommand = (command, githubKey, repoName) => {
+const executeCommand = (command, githubKey, repoName, req = {}) => {
     let cmdToExecute = '';
     
     switch(command) {
@@ -1407,7 +1520,8 @@ const executeCommand = (command, githubKey, repoName) => {
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName}/logs && cat *.log`;
             break;
         case 'add-container':
-            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} `;
+            const containerName = req.body.containerName || '';
+            cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && bash ~/manager/bin/add ${repoName} "${containerName}"`;
             break;
         case 'containers-list':
             cmdToExecute = `cd ~/manager/manager-web-app/${repoName} && sudo bash ~/manager/bin/containers-list `;
@@ -1445,13 +1559,56 @@ app.get('/load-config', (req, res) => {
 
 // API endpoint to execute commands
 app.post('/api/execute', async (req, res) => {
-    const { command, githubKey, repoName } = req.body;
+    const { command, githubKey, repoName, containerName } = req.body;
     
     try {
-        const output = await executeCommand(command, githubKey, repoName);
+        // Include containerName in the request parameters
+        req.body.containerName = containerName;
+        const output = await executeCommand(command, githubKey, repoName, req);
+        
+        // Store the container name mapping if this is an add-container command
+        if (command === 'add-container' && containerName) {
+            try {
+                const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
+                let mappings = {};
+                
+                // Load existing mappings if available
+                if (fs.existsSync(mappingsPath)) {
+                    mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
+                }
+                
+                // Extract container ID from output if possible
+                const match = output.match(/Container ID: ([a-zA-Z0-9]+)/);
+                if (match && match[1]) {
+                    mappings[match[1]] = containerName;
+                    fs.writeFileSync(mappingsPath, JSON.stringify(mappings, null, 2));
+                }
+            } catch (err) {
+                console.error('Error saving container name mapping:', err);
+            }
+        }
+        
         res.json({ output });
     } catch (error) {
         res.status(500).json({ output: error });
+    }
+});
+
+// API endpoint to get custom container names
+app.post('/api/container-names', (req, res) => {
+    const { repoName } = req.body;
+    const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
+    
+    try {
+        if (fs.existsSync(mappingsPath)) {
+            const mappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
+            res.json({ mappings });
+        } else {
+            res.json({ mappings: {} });
+        }
+    } catch (error) {
+        console.error('Error reading container name mappings:', error);
+        res.status(500).json({ error: 'Error reading container name mappings' });
     }
 });
 
@@ -1503,9 +1660,20 @@ app.get('/', (req, res) => {
 });
 
 // Format container output into a more structured format
-function formatContainerOutput(stdout) {
+function formatContainerOutput(stdout, repoName) {
     const lines = stdout.trim().split('\n');
     if (lines.length <= 1) return stdout;  // No containers or just header
+    
+    // Try to load container name mappings
+    let nameMappings = {};
+    try {
+        const mappingsPath = path.join(process.env.HOME, 'manager', 'manager-web-app', repoName, 'container-names.json');
+        if (fs.existsSync(mappingsPath)) {
+            nameMappings = JSON.parse(fs.readFileSync(mappingsPath, 'utf8'));
+        }
+    } catch (err) {
+        console.error('Error loading container name mappings:', err);
+    }
     
     let formattedOutput = "CONTAINER ID | NAME | STATUS | PORTS\n";
     formattedOutput += "-------------------------------------------\n";
@@ -1513,7 +1681,10 @@ function formatContainerOutput(stdout) {
     for (let i = 1; i < lines.length; i++) {
         const parts = lines[i].trim().split(/\s{2,}/);
         if (parts.length >= 4) {
-            formattedOutput += `${parts[0]} | ${parts[1]} | ${parts[2]} | ${parts[3]}\n`;
+            // Use custom name if available, otherwise use original
+            const containerId = parts[0];
+            const displayName = nameMappings[containerId] || parts[1];
+            formattedOutput += `${containerId} | ${displayName} | ${parts[2]} | ${parts[3]}\n`;
         }
     }
     
