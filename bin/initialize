@@ -27,6 +27,7 @@ curl -s -H "Authorization: token $GITHUB_TOKEN" \
     https://api.github.com/user/repos
 
 # Change to the new directory
+mkdir -p "$NEW_REPO_NAME"
 cd "$NEW_REPO_NAME"
 
 # Create a fresh git repository with only the specified files
