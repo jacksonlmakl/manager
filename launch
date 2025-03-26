@@ -1028,7 +1028,10 @@ cat > "$APP_DIR/index.html" << 'EOL'
                         <i class="fas fa-play-circle"></i> Start All
                         <span class="tooltiptext">Start all containers</span>
                     </button>
-
+                    <button class="btn-restart tooltip" onclick="executeCommand('get-logs')">
+                        <i class="fas fa-file-alt"></i> View Logs
+                        <span class="tooltiptext">View Logs From Latest Launch</span>
+                    </button>
                     <button class="btn-add tooltip" onclick="showAddContainerModal()">
                         <i class="fas fa-plus-circle"></i> Add New
                         <span class="tooltiptext">Add a new container</span>
@@ -1802,7 +1805,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
                     
                     tableHTML += `
                         <tr data-status="${statusText.toLowerCase()}" class="container-row">
-                            <td><span class="container-badge" title="${container.id}">${container.id.substring(0, 12)}</span></td>
+                            <td><span class="container-badge" title="${container.id}">${container.id}</span></td>
                             <td>
                                 <div class="container-name">${displayName}</div>
                                 ${container.url ? 
@@ -1818,11 +1821,11 @@ cat > "$APP_DIR/index.html" << 'EOL'
                             <td>
                                 <div class="container-actions">
                                     <button class="btn-${statusText === 'Up' ? 'stop' : 'start'}" 
-                                            onclick="executeContainerCommand('${statusText === 'Up' ? 'stop' : 'start'}-container', '${container.name}')">
+                                            onclick="executeContainerCommand('${statusText === 'Up' ? 'stop' : 'start'}-container', '${container.id}')">
                                         <i class="fas fa-${statusText === 'Up' ? 'stop' : 'play'}-circle"></i>
                                         ${statusText === 'Up' ? 'Stop' : 'Start'}
                                     </button>
-                                    <button class="btn-restart" onclick="viewContainerLogs('${container.name}')">
+                                    <button class="btn-restart" onclick="viewContainerLogs('${container.id}')">
                                         <i class="fas fa-file-alt"></i>
                                         Logs
                                     </button>
@@ -1982,8 +1985,8 @@ cat > "$APP_DIR/index.html" << 'EOL'
                 const containerName = containerPart.split(' (')[0].trim();
                 const containerStatus = containerPart.split(' (')[1].replace(')', '').trim();
                 
-                // Generate a pseudo-ID for the container based on its name
-                const containerId = containerName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 12);
+                // Keep the exact container name (framework-app, framework-app-1, etc.)
+                const containerId = containerName;
                 
                 // Determine overall status
                 const isRunning = statusPart === 'Active' && containerStatus !== 'Not Running';
