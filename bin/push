@@ -31,7 +31,7 @@ cd "$REPO_NAME"
 # Ensure we are on the main branch
 echo "Checking out main branch..."
 git checkout main
-git add model* controller*/*.yaml docker-compose.yml container-names.json
+git add .
 git commit -m "$(date +'%Y-%m-%d %H:%M:%S') - Auto Commit"
 
 
