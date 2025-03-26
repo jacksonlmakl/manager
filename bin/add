@@ -86,7 +86,7 @@ if [ -n "$DISPLAY_NAME" ]; then
     
     # Initialize the file if it doesn't exist
     if [ ! -f "$NAMES_FILE" ]; then
-        echo "{}" > "$NAMES_FILE"
+        echo "{\"framework-app\": \"Main\", \"framework-app-$NEW_CONTAINER_NUM\": \"$DISPLAY_NAME\"}" > "$NAMES_FILE"
     fi
     
     # We'll append information for the web interface to parse
