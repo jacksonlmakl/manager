@@ -28,12 +28,22 @@ fi
 
 cd "$REPO_NAME"
 
+# Untrack Dockerfile and ignore it locally (if it exists and is tracked)
+if [ -f Dockerfile ]; then
+    if git ls-files --error-unmatch Dockerfile > /dev/null 2>&1; then
+        echo "Untracking Dockerfile and adding to local ignore..."
+        git rm --cached Dockerfile
+        mkdir -p .git/info
+        grep -qxF "Dockerfile" .git/info/exclude || echo "Dockerfile" >> .git/info/exclude
+        git commit -am "Untrack Dockerfile (local-only)"
+    fi
+fi
+
 # Ensure we are on the main branch
 echo "Checking out main branch..."
 git checkout main
 git add .
 git commit -m "$(date +'%Y-%m-%d %H:%M:%S') - Auto Commit"
-
 
 # Force push the local branch to overwrite the remote branch
 echo "Force pushing local branch to overwrite remote main branch..."
