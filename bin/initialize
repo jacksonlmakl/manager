@@ -41,6 +41,10 @@ if [ -f Dockerfile ]; then
     echo "Dockerfile" >> .git/info/exclude
 fi
 
+git rm -r --cached logs/
+grep -qxF "logs/*" .git/info/exclude || echo "logs/*" >> .git/info/exclude
+
+
 # Commit and push changes
 git commit -am "Untrack Dockerfile locally and exclude from future commits"
 
