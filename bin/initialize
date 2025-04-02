@@ -33,6 +33,17 @@ git clone https://github.com/jacksonlmakl/deploy.git "$NEW_REPO_NAME"
 # Change to the new directory
 cd "$NEW_REPO_NAME"
 
+# Untrack Dockerfile but keep it locally
+if [ -f Dockerfile ]; then
+    echo "Untracking Dockerfile locally..."
+    git rm --cached Dockerfile
+    mkdir -p .git/info
+    echo "Dockerfile" >> .git/info/exclude
+fi
+
+# Commit and push changes
+git commit -am "Untrack Dockerfile locally and exclude from future commits"
+
 # Change the remote origin to the new repository
 echo "Setting new remote origin..."
 git remote remove origin
