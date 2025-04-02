@@ -38,6 +38,11 @@ if [ -f Dockerfile ]; then
     fi
 fi
 
+git rm -r --cached logs/
+grep -qxF "logs/*" .git/info/exclude || echo "logs/*" >> .git/info/exclude
+
+
+
 # Make sure we're on the main branch
 echo "Checking out main branch..."
 git checkout main
