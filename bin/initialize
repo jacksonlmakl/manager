@@ -41,8 +41,12 @@ if [ -f Dockerfile ]; then
     echo "Dockerfile" >> .git/info/exclude
 fi
 
-git rm -r --cached logs/
-grep -qxF "logs/*" .git/info/exclude || echo "logs/*" >> .git/info/exclude
+if [ -d logs ]; then
+    echo "Untracking logs directory locally..."
+    git rm -r --cached logs/
+    mkdir -p .git/info
+    grep -qxF "logs/" .git/info/exclude || echo "logs/" >> .git/info/exclude
+fi
 
 
 # Commit and push changes
