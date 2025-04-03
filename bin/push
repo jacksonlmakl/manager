@@ -39,7 +39,11 @@ if [ -f Dockerfile ]; then
 fi
 
 
-
+if [ -d logs ]; then
+    echo "Untracking logs directory locally..."
+    mkdir -p .git/info
+    grep -qxF "logs/" .git/info/exclude || echo "logs/" >> .git/info/exclude
+fi
 
 
 # Make sure we're on the main branch
