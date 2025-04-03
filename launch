@@ -93,7 +93,7 @@ cat > "$APP_DIR/index.html" << 'EOL'
             justify-content: center;
             color: white;
             font-size: 24px;
-            box-shadow: 0 3px 10px rgba(246, 222, 0, 0.3);
+            box-shadow: 0 3px 10px rgba(246, 207, 108, 0.3);
         }
 
         .app-header .version {
